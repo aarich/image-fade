@@ -1,3 +1,3 @@
 # image-fade
 
-## Trying to create some interesting transformations of images
+A tool for creating *neat-o* transitions between images
