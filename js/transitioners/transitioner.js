@@ -1,4 +1,4 @@
-import { Properties } from './properties';
+import Properties from './properties.js';
 
 export default class Transitioner {
     constructor(image1, image2, properties) {

@@ -1,2 +1,2 @@
-export { UseOrLoseTransitioner } from './transitioners/useOrLose';
-export { Properties } from './transitioners/properties';
+export { default as UseOrLoseTransitioner } from './transitioners/useOrLose.js';
+export { default as Properties } from './transitioners/properties.js';

@@ -1,4 +1,4 @@
-import { Transitioner } from './transitioner';
+import Transitioner from './transitioner.js';
 
 export default class UseOrLoseTransitioner extends Transitioner {
     run() {
