@@ -1,4 +1,6 @@
-export class MyImage {
+import Pixel from './pixel.js';
+
+export default class MyImage {
     constructor(imageData) {
         this.imageData = imageData;
     }
@@ -12,7 +14,7 @@ export class MyImage {
     }
 
     get(x, y) {
-        const redIndex = _getRedIndex(x, y);
+        const redIndex = this._getRedIndex(x, y);
         const r = this.imageData.data[redIndex];
         const g = this.imageData.data[redIndex + 1];
         const b = this.imageData.data[redIndex + 2];
@@ -25,7 +27,7 @@ export class MyImage {
      * sets the RGB value at (x, y) to v.
      */
     setG(x, y, v) {
-        set(x, y, v, v, v)
+        this.set(x, y, v, v, v);
     }
 
     /**
@@ -37,8 +39,8 @@ export class MyImage {
     }
 
     set(x, y, r, g, b, a) {
-        const redIndex = _getRedIndex(x, y);
-        this.imageData.data[redIndex]     = r;
+        const redIndex = this._getRedIndex(x, y);
+        this.imageData.data[redIndex] = r;
         this.imageData.data[redIndex + 1] = g;
         this.imageData.data[redIndex + 2] = b;
         if (a) {
@@ -58,46 +60,5 @@ export class MyImage {
         const newImageData = new Uint8ClampedArray(this.imageData.data);
         newImageData.data.set(this.imageData.data);
         return new MyImage(newImageData);
-    }
-}
-
-export class Pixel {
-    /**
-     * 
-     * @param {number} r 
-     * @param {number} g 
-     * @param {number} b 
-     * @param {number} a 
-     */
-    constructor(r, g, b, a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-    }
-
-    /**
-     * Returns true if this pixel is greater than p. 
-     * Checks only red value so assumes grey scale.
-     * @param {Pixel} p 
-     */
-    isGreaterThan(p) {
-        return this.r > p.r;
-    }
-
-    /**
-     * Returns the difference in the R value (p - this)
-     * @param {Pixel} p 
-     */
-    minus(p) {
-        return this.r - p.r;
-    }
-
-    /**
-     * returns a new pixel with the value v added to it
-     * @param {number} v the amount to add to this pixel
-     */
-    add(v) {
-        return new Pixel(this.r + v, this.g + v, this.b + v, this.a);
     }
 }

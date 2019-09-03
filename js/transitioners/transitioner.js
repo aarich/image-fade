@@ -3,11 +3,11 @@ import Properties from './properties.js';
 export default class Transitioner {
     constructor(image1, image2, properties) {
         if (image1.width !== image2.width) {
-            throw `widths are not equal: ${image1.width} vs ${image2.width}`;
+            throw new Error(`widths are not equal: ${image1.width} vs ${image2.width}`);
         }
 
         if (image1.height !== image2.height) {
-            throw `heights are not equal: ${image1.height} vs ${image2.height}`;
+            throw new Error(`heights are not equal: ${image1.height} vs ${image2.height}`);
         }
 
         this.input = image1;
@@ -15,7 +15,7 @@ export default class Transitioner {
         this.width = this.input.width;
         this.height = this.input.height;
 
-        this.properties = properties ? properties : new Properties();
+        this.properties = properties || new Properties();
     }
 
     iterate(fn) {
@@ -26,13 +26,7 @@ export default class Transitioner {
         }
     }
 
-    run() {;
-        console.log(`
-            =====================================
-            Running with the following arguments:
-            width: ${this.width}
-            height: ${this.height}
-            =====================================`);
-        throw "run method not implemented";
+    run() {
+        throw new Error(`run method not implemented for ${this.constructor.name}`);
     }
 }

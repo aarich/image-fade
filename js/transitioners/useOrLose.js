@@ -1,18 +1,36 @@
 import Transitioner from './transitioner.js';
 
 export default class UseOrLoseTransitioner extends Transitioner {
-    run() {
+    run(callback) {
         this.current = this.input.clone();
 
-        for (let i = 0; i < this.properties.iterations; i++) {
-            let temp = this.current.clone();
-            this.iterate((x, y) => {
-                const pixel = this.getNextPixel(x, y);
-                temp.setP(x, y, pixel);
-            });
+        this._runInner(0, callback);
+    }
 
-            this.current = temp;
+    /**
+     * @param {number} iteration current iteration
+     * @param {function} callback the function to call after each iteration
+     */
+    _runInner(iteration, callback) {
+        if (iteration >= this.properties.iterations) {
+            return; // Done.
         }
+
+        const temp = this.current.clone();
+        this.iterate((x, y) => {
+            const pixel = this.getNextPixel(x, y);
+            temp.setP(x, y, pixel);
+        });
+
+        this.current = temp;
+
+        if (callback) {
+            callback(this.current);
+        }
+
+        setTimeout(() => {
+            this.runInner(iteration + 1, callback);
+        }, 20);
     }
 
     getNextPixel(x, y) {
@@ -22,10 +40,10 @@ export default class UseOrLoseTransitioner extends Transitioner {
         let diff = desiredPixel.minus(currentPixel);
         let nextPixel = currentPixel.add(diff > 0 ? -1 : 1);
 
-        const isBetterOption = p => {
+        const isBetterOption = (p) => {
             const newDiff = desiredPixel.minus(p);
             return Math.abs(newDiff) <= Math.abs(diff);
-        }
+        };
 
         if (x > 0 && isBetterOption(this.current.get(x - 1, y))) {
             nextPixel = this.current.get(x - 1, y);

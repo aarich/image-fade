@@ -1,11 +1,10 @@
-import { MyImage } from './image.js';
+import MyImage from './image.js';
 
-export class ImagePicker extends HTMLElement {
-
+export default class ImagePicker extends HTMLElement {
     constructor() {
         super();
 
-        const shadow = this.attachShadow({mode: 'open'});
+        const shadow = this.attachShadow({ mode: 'open' });
 
         const wrapper = document.createElement('span');
         wrapper.setAttribute('class', 'wrapper');
@@ -18,21 +17,21 @@ export class ImagePicker extends HTMLElement {
         input.setAttribute('id', 'imageLoader');
         input.setAttribute('name', 'imageLoader');
 
-        let cmp = this;
-        input.addEventListener('change', e => {
-            let reader = new FileReader();
+        const cmp = this;
+        input.addEventListener('change', (e) => {
+            const reader = new FileReader();
             reader.onload = (event) => {
-                let img = new Image();
+                const img = new Image();
                 img.onload = () => {
                     cmp.canvas.width = img.width;
                     cmp.canvas.height = img.height;
-                    cmp.ctx.drawImage(img,0,0);
+                    cmp.ctx.drawImage(img, 0, 0);
                     cmp.image = new MyImage(cmp.ctx.getImageData(0, 0, img.width, img.height));
                     cmp.dispatchEvent(new Event('change'));
-                }
+                };
                 img.src = event.target.result;
                 cmp.url = img.src;
-            }
+            };
             reader.readAsDataURL(e.target.files[0]);
         }, false);
 
@@ -44,7 +43,7 @@ export class ImagePicker extends HTMLElement {
         this.ctx = this.canvas.getContext('2d');
         if (this.hasAttribute('showImage')) {
             wrapper.appendChild(this.canvas);
-        }   
+        }
     }
 
     getImage() {
