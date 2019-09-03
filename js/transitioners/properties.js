@@ -1,0 +1,15 @@
+export default class Properties {
+    _numIterations = 10;
+
+    /**
+     * @param {number} x how many iterations to run (default 10)
+     */
+    numIterations(x) {
+        this._numIterations = x;
+        return this;
+    }
+
+    get iterations() {
+        return this._numIterations;
+    }
+}

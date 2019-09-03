@@ -1,5 +1,5 @@
 import { ImagePicker } from './imagePicker.js';
-import { Transitioner } from './transitioner.js';
+import { UseOrLoseTransitioner } from './transitioners.js';
 
 customElements.define('image-picker', ImagePicker);
 
@@ -23,6 +23,6 @@ im2.addEventListener('change', e => {
 });
 
 const run = () => {
-    const transitioner = new Transitioner(im1.getImage(), im2.getImage());
+    const transitioner = new UseOrLoseTransitioner(im1.getImage(), im2.getImage());
     transitioner.run();
 }
