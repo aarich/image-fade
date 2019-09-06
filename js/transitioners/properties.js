@@ -1,10 +1,10 @@
 export default class Properties {
     constructor() {
-        this._numIterations = 10;
+        this._numIterations = 300;
     }
 
     /**
-     * @param {number} x how many iterations to run (default 10)
+     * @param {number} x how many iterations to run
      */
     numIterations(x) {
         this._numIterations = x;

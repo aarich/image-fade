@@ -13,6 +13,22 @@ export default class MyImage {
         return this.imageData.height;
     }
 
+    convertToGrayScale() {
+        this.iterate((x, y) => {
+            const p = this.get(x, y);
+            p.convertToGrayScale();
+            this.setP(x, y, p);
+        });
+    }
+
+    iterate(fn) {
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                fn(x, y);
+            }
+        }
+    }
+
     get(x, y) {
         const redIndex = this._getRedIndex(x, y);
         const r = this.imageData.data[redIndex];
@@ -57,8 +73,8 @@ export default class MyImage {
     }
 
     clone() {
-        const newImageData = new Uint8ClampedArray(this.imageData.data);
-        newImageData.data.set(this.imageData.data);
+        const newImageData = new ImageData(new Uint8ClampedArray(this.imageData.data),
+            this.imageData.width, this.imageData.height);
         return new MyImage(newImageData);
     }
 }

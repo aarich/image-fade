@@ -37,4 +37,11 @@ export default class Pixel {
     add(v) {
         return new Pixel(this.r + v, this.g + v, this.b + v, this.a);
     }
+
+    convertToGrayScale() {
+        const newValue = (this.r + this.g + this.b) / 3;
+        this.r = newValue;
+        this.g = newValue;
+        this.b = newValue;
+    }
 }

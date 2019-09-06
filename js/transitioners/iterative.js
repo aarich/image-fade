@@ -1,9 +1,10 @@
 import Transitioner from './transitioner.js';
 
-export default class UseOrLoseTransitioner extends Transitioner {
+export default class IterativeTransitioner extends Transitioner {
     run(callback) {
+        this.input.convertToGrayScale();
+        this.output.convertToGrayScale();
         this.current = this.input.clone();
-
         this._runInner(0, callback);
     }
 
@@ -25,12 +26,12 @@ export default class UseOrLoseTransitioner extends Transitioner {
         this.current = temp;
 
         if (callback) {
-            callback(this.current);
+            callback(this.current, iteration, this.properties.iterations);
         }
 
         setTimeout(() => {
-            this.runInner(iteration + 1, callback);
-        }, 20);
+            this._runInner(iteration + 1, callback);
+        }, 10);
     }
 
     getNextPixel(x, y) {
