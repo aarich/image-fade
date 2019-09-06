@@ -10,9 +10,23 @@
 
     <form>
       <div>
-		    <image-picker id="im1" label="Image 1" showImage></image-picker>
-        <image-picker id="im2" label="Image 2" showImage></image-picker>
+        <image-picker id="im1" label="Input" showImage></image-picker>
+      </div>
+      <div>
+        <image-picker id="im2" label="Output" showImage></image-picker>
+      </div>
+      <div>
+        <br>
+        <span title="Or, at least, the illusion of control">Controls:</span>
+        <input type="number" id="iterations"></input>
+        <button type="button" id="stop">Stop</button>
+        <button type="button" id="reset">Reset</button>
+        <button type="button" id="go">Go</button>
+        <button type="button" id="sample">Sample</button>
+        <select id="transitionerSelect"></select>
         <p id="message"></p>
+      </div>
+      <div>
         <image id="currentImage"></image>
       </div>
     </form>

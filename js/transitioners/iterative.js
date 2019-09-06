@@ -26,12 +26,17 @@ export default class IterativeTransitioner extends Transitioner {
         this.current = temp;
 
         if (callback) {
-            callback(this.current, iteration, this.properties.iterations);
+            callback(this.current, iteration + 1, this.properties.iterations);
         }
 
-        setTimeout(() => {
-            this._runInner(iteration + 1, callback);
-        }, 10);
+        if (!this.shouldStop) {
+            setTimeout(() => {
+                this._runInner(iteration + 1, callback);
+            }, 1);
+        } else {
+            // Stopping now, so reset this
+            this.shouldStop = false;
+        }
     }
 
     getNextPixel(x, y) {

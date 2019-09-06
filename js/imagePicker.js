@@ -10,7 +10,7 @@ export default class ImagePicker extends HTMLElement {
         wrapper.setAttribute('class', 'wrapper');
 
         const label = document.createElement('label');
-        label.textContent = this.getAttribute('label');
+        label.textContent = `${this.getAttribute('label')} `;
 
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -36,14 +36,31 @@ export default class ImagePicker extends HTMLElement {
         }, false);
 
         shadow.appendChild(wrapper);
-        wrapper.appendChild(label);
-        wrapper.appendChild(input);
 
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
         if (this.hasAttribute('showImage')) {
-            wrapper.appendChild(this.canvas);
+            const div = document.createElement('div');
+            div.appendChild(this.canvas);
+            wrapper.appendChild(div);
         }
+
+        const inputDiv = document.createElement('div');
+        inputDiv.appendChild(label);
+        inputDiv.appendChild(input);
+        wrapper.appendChild(inputDiv);
+    }
+
+    setImage(url) {
+        const img = new Image();
+        img.onload = () => {
+            this.canvas.width = img.width;
+            this.canvas.height = img.height;
+            this.ctx.drawImage(img, 0, 0);
+            this.image = new MyImage(this.ctx.getImageData(0, 0, img.width, img.height));
+            this.dispatchEvent(new Event('change'));
+        };
+        img.src = url;
     }
 
     getImage() {

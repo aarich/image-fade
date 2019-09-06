@@ -1,7 +1,9 @@
 import ImagePicker from './imagePicker.js';
-import { IterativeTransitioner } from './transitioners.js';
+import { IterativeTransitioner, Properties } from './transitioners.js';
 
 customElements.define('image-picker', ImagePicker);
+
+let transitioner;
 
 let im1Selected = false;
 let im2Selected = false;
@@ -10,6 +12,18 @@ const im2 = document.getElementById('im2');
 
 const currentImageElement = document.getElementById('currentImage');
 const messageElement = document.getElementById('message');
+const iterationsElement = document.getElementById('iterations');
+iterationsElement.setAttribute('placeholder', `Iterations (${new Properties().iterations})`);
+const transitionerSelect = document.getElementById('transitionerSelect');
+const transitionerOptions = [
+    { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
+];
+
+transitionerOptions.forEach((option) => {
+    const optionEl = document.createElement('option');
+    optionEl.textContent = option.name;
+    transitionerSelect.appendChild(optionEl);
+});
 
 const cb = (currentImage, currentIteration, totalIterations) => {
     const canvas = document.createElement('canvas');
@@ -23,9 +37,43 @@ const cb = (currentImage, currentIteration, totalIterations) => {
 };
 
 const run = () => {
-    const transitioner = new IterativeTransitioner(im1.getImage(), im2.getImage());
+    let properties;
+    if (iterationsElement.value) {
+        properties = new Properties();
+        properties.numIterations(iterationsElement.value);
+    }
+
+    const Fn = transitionerOptions[transitionerSelect.selectedIndex].maker;
+
+    transitioner = transitioner
+        || Fn(im1.getImage(), im2.getImage(), properties);
+
     transitioner.run(cb);
 };
+
+document.getElementById('stop').addEventListener('click', () => {
+    if (transitioner) {
+        transitioner.stop();
+    }
+});
+
+document.getElementById('go').addEventListener('click', () => {
+    run();
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+    if (transitioner) {
+        transitioner.stop();
+    }
+
+    transitioner = null;
+});
+
+document.getElementById('sample').addEventListener('click', () => {
+    iterationsElement.value = 150;
+    im1.setImage('./images/t1.jpg');
+    im2.setImage('./images/t2.jpg');
+});
 
 im1.addEventListener('change', () => {
     im1Selected = true;

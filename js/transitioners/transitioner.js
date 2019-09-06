@@ -16,6 +16,8 @@ export default class Transitioner {
         this.height = this.input.height;
 
         this.properties = properties || new Properties();
+
+        this.shouldStop = false;
     }
 
     iterate(fn) {
@@ -28,5 +30,9 @@ export default class Transitioner {
 
     run() {
         throw new Error(`run method not implemented for ${this.constructor.name}`);
+    }
+
+    stop() {
+        this.shouldStop = true;
     }
 }
