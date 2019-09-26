@@ -19,5 +19,6 @@ module.exports = {
     'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
     'import/extensions': [ 'error', { js: 'always'} ],
     'no-underscore-dangle' : 0,
+    'radix': ["error", "as-needed"],
   },
 };
