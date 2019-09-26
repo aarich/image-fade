@@ -1,7 +1,6 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
-import GIFEncoder from 'gifencoder';
-import fs from 'fs';
+import GIF from 'gif.js';
 
 customElements.define('image-picker', ImagePicker);
 
@@ -30,7 +29,7 @@ transitionerOptions.forEach((option) => {
 });
 
 const finalize = () => {
-    gif.finish();
+    gif.render();
 };
 
 const cb = (currentImage, currentIteration, totalIterations) => {
@@ -62,13 +61,14 @@ const run = () => {
     transitioner = transitioner
         || Fn(im1.getImage(), im2.getImage(), properties);
 
-    gif = new GIFEncoder(im1.width, im2.height);
+    gif = new GIF({
+        workers: 2,
+        quality: 10,
+    });
 
-    gif.createReadStream().pipe(fs.createWriteStream('myanimated.gif'));
-    gif.start();
-    gif.setRepeat(0); // 0 for repeat, -1 for no-repeat
-    gif.setDelay(1000 / properties.iterations); // frame delay in ms
-    gif.setQuality(10);
+    gif.on('finished', (blob) => {
+        window.open(URL.createObjectURL(blob));
+    });
 
     transitioner.run(cb);
 };

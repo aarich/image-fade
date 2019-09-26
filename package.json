@@ -4,6 +4,7 @@
   "description": "A tool for creating *neat-o* transitions between images",
   "main": "index.js",
   "dependencies": {
+    "gif.js": "^0.2.0",
     "gifencoder": "^2.0.1"
   },
   "devDependencies": {
