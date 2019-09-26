@@ -1,6 +1,5 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
-import GIF from 'gif.js';
 
 customElements.define('image-picker', ImagePicker);
 

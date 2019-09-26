@@ -1945,7 +1945,8 @@ var gif_js = {
   TypedNeuQuant: TypedNeuQuant,
   GIFEncoder: GIFEncoder_1,
   LZWEncoder: LZWEncoder_1
-};customElements.define('image-picker', ImagePicker);
+};
+var gif_js_3 = gif_js.GIFEncoder;customElements.define('image-picker', ImagePicker);
 
 let transitioner;
 
@@ -2004,7 +2005,7 @@ const run = () => {
     transitioner = transitioner
         || Fn(im1.getImage(), im2.getImage(), properties);
 
-    gif = new gif_js({
+    gif = new gif_js_3({
         workers: 2,
         quality: 10,
     });

@@ -9,5 +9,5 @@ export default {
         file: 'bundle.js',
         format: 'iife',
     },
-    plugins: [resolve({ preferBuiltins: true }), commonjs(), builtins(), globals()],
+    plugins: [resolve(), commonjs(), builtins(), globals()],
 };
