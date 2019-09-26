@@ -1,7 +1,6 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
-
-const GIFEncoder = require('../node_modules/gifencoder/lib/GIFEncoder.js');
+import * as GIFEncoder from 'gifencoder';
 
 customElements.define('image-picker', ImagePicker);
 
