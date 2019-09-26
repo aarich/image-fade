@@ -1,0 +1,27 @@
+{
+  "name": "image-fade",
+  "version": "1.0.0",
+  "description": "A tool for creating *neat-o* transitions between images",
+  "main": "index.js",
+  "dependencies": {
+    "gifencoder": "^2.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aarich/image-fade.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aarich/image-fade/issues"
+  },
+  "homepage": "https://github.com/aarich/image-fade#readme"
+}

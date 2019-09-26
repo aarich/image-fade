@@ -1,6 +1,7 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
-import { GIF } from './gif.js';
+
+const GIFEncoder = require('gifencoder');
 
 customElements.define('image-picker', ImagePicker);
 
@@ -20,14 +21,7 @@ const transitionerOptions = [
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
 ];
 
-let gif = new GIF({
-    workers: 2,
-    quality: 10,
-});
-
-gif.on('finished', (blob) => {
-    window.open(URL.createObjectURL(blob));
-});
+let gif;
 
 transitionerOptions.forEach((option) => {
     const optionEl = document.createElement('option');
@@ -36,7 +30,7 @@ transitionerOptions.forEach((option) => {
 });
 
 const finalize = () => {
-    gif.render();
+    gif.finish();
 };
 
 const cb = (currentImage, currentIteration, totalIterations) => {
@@ -67,6 +61,19 @@ const run = () => {
 
     transitioner = transitioner
         || Fn(im1.getImage(), im2.getImage(), properties);
+
+    gif = new GIFEncoder(im1.width, im2.height);
+
+    gif.createReadStream().pipe(fs.createWriteStream('myanimated.gif'));/
+
+    gif.start();
+    gif.setRepeat(0);   // 0 for repeat, -1 for no-repeat
+    gif.setDelay(1000 / properties.iterations);  // frame delay in ms
+    gif.setQuality(10);
+
+    gif.on('finished', function(blob) {
+        window.open(URL.createObjectURL(blob));
+    });
 
     transitioner.run(cb);
 };
