@@ -6340,7 +6340,7 @@ GIFEncoder.prototype.writePixels = function() {
   enc.encode(this.out);
 };
 
-var GIFEncoder_1 = GIFEncoder;var gifencoder = GIFEncoder_1;customElements.define('image-picker', ImagePicker);
+var GIFEncoder_1 = GIFEncoder;var gifencoder = GIFEncoder_1;var fs = {};customElements.define('image-picker', ImagePicker);
 
 let transitioner;
 
@@ -6401,14 +6401,11 @@ const run = () => {
 
     gif = new gifencoder(im1.width, im2.height);
 
+    gif.createReadStream().pipe(fs.createWriteStream('myanimated.gif'));
     gif.start();
     gif.setRepeat(0); // 0 for repeat, -1 for no-repeat
     gif.setDelay(1000 / properties.iterations); // frame delay in ms
     gif.setQuality(10);
-
-    gif.on('finished', (blob) => {
-        window.open(URL.createObjectURL(blob));
-    });
 
     transitioner.run(cb);
 };
