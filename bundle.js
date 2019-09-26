@@ -6340,7 +6340,7 @@ GIFEncoder.prototype.writePixels = function() {
   enc.encode(this.out);
 };
 
-var GIFEncoder_1 = GIFEncoder;var gifencoder = GIFEncoder_1;var GIFEncoder$1 = /*#__PURE__*/Object.freeze({'default': gifencoder,__moduleExports: gifencoder});customElements.define('image-picker', ImagePicker);
+var GIFEncoder_1 = GIFEncoder;var gifencoder = GIFEncoder_1;customElements.define('image-picker', ImagePicker);
 
 let transitioner;
 
@@ -6399,7 +6399,7 @@ const run = () => {
     transitioner = transitioner
         || Fn(im1.getImage(), im2.getImage(), properties);
 
-    gif = new GIFEncoder$1(im1.width, im2.height);
+    gif = new gifencoder(im1.width, im2.height);
 
     gif.start();
     gif.setRepeat(0); // 0 for repeat, -1 for no-repeat
