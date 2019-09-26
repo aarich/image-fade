@@ -1,5 +1,6 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
+import { GIF } from './gif.js';
 
 customElements.define('image-picker', ImagePicker);
 
@@ -19,11 +20,24 @@ const transitionerOptions = [
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
 ];
 
+let gif = new GIF({
+    workers: 2,
+    quality: 10,
+});
+
+gif.on('finished', (blob) => {
+    window.open(URL.createObjectURL(blob));
+});
+
 transitionerOptions.forEach((option) => {
     const optionEl = document.createElement('option');
     optionEl.textContent = option.name;
     transitionerSelect.appendChild(optionEl);
 });
+
+const finalize = () => {
+    gif.render();
+};
 
 const cb = (currentImage, currentIteration, totalIterations) => {
     const canvas = document.createElement('canvas');
@@ -34,6 +48,12 @@ const cb = (currentImage, currentIteration, totalIterations) => {
     currentImageElement.src = canvas.toDataURL();
 
     messageElement.textContent = `Iteration ${currentIteration} out of ${totalIterations}`;
+
+    gif.addFrame(ctx, { copy: true, delay: (1000 / totalIterations) });
+
+    if (currentIteration === totalIterations) {
+        finalize();
+    }
 };
 
 const run = () => {
