@@ -1,8 +1,7 @@
 import ImagePicker from './imagePicker.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
 
-const GIFEncoder = require('gifencoder');
-const fs = require('fs');
+const GIFEncoder = require('../node_modules/gifencoder/lib/GIFEncoder.js');
 
 customElements.define('image-picker', ImagePicker);
 
@@ -64,8 +63,6 @@ const run = () => {
         || Fn(im1.getImage(), im2.getImage(), properties);
 
     gif = new GIFEncoder(im1.width, im2.height);
-
-    gif.createReadStream().pipe(fs.createWriteStream('myanimated.gif'));
 
     gif.start();
     gif.setRepeat(0); // 0 for repeat, -1 for no-repeat
