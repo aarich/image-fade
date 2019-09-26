@@ -5,9 +5,13 @@ A tool for creating *neat-o* transitions between images
 # Sample
 
 | Input     | Output  |
-|--- | --- |
+|---        | --- |
 | ![Input](/images/t1.jpg) | ![Output](/images/t2.jpg) | 
 
-### Resulting fade using the iterative transitioner
+### Resulting Fades
 
-![Sample Output Gif](/samples/sample1.gif)
+| Fade Type | Result |
+|---        |---     | 
+| Iterative | ![Sample Output Gif](/samples/sample1.gif) | 
+|---        |---     |
+| Will there be more? | :?: |

@@ -73,6 +73,7 @@ const run = () => {
         quality: 10,
         width: im1.width,
         height: im2.height,
+        workerScript: 'js/gif.worker.js',
     });
 
     gif.on('finished', (blob) => {
