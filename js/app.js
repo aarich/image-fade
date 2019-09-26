@@ -4,6 +4,7 @@ import { IterativeTransitioner, Properties } from './transitioners.js';
 customElements.define('image-picker', ImagePicker);
 
 let transitioner;
+let totalIterations = 150;
 
 let im1Selected = false;
 let im2Selected = false;
@@ -12,6 +13,7 @@ const im2 = document.getElementById('im2');
 
 const currentImageElement = document.getElementById('currentImage');
 const messageElement = document.getElementById('message');
+const gifMessageElement = document.getElementById('gifMessage');
 const iterationsElement = document.getElementById('iterations');
 iterationsElement.setAttribute('placeholder', `Iterations (${new Properties().iterations})`);
 const transitionerSelect = document.getElementById('transitionerSelect');
@@ -21,6 +23,10 @@ const transitionerOptions = [
 
 let gif;
 
+currentImageElement.addEventListener('load', () => {
+    gif.addFrame(currentImageElement, { copy: true, delay: 5 });
+});
+
 transitionerOptions.forEach((option) => {
     const optionEl = document.createElement('option');
     optionEl.textContent = option.name;
@@ -28,10 +34,11 @@ transitionerOptions.forEach((option) => {
 });
 
 const finalize = () => {
+    gifMessageElement.textContent = 'Rendering Gif Now. Please Wait.';
     gif.render();
 };
 
-const cb = (currentImage, currentIteration, totalIterations) => {
+const cb = (currentImage, currentIteration) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = currentImage.width;
@@ -41,18 +48,19 @@ const cb = (currentImage, currentIteration, totalIterations) => {
 
     messageElement.textContent = `Iteration ${currentIteration} out of ${totalIterations}`;
 
-    gif.addFrame(currentImageElement, { delay: parseInt(1000 / totalIterations) });
-
     if (currentIteration === totalIterations) {
         finalize();
     }
 };
 
 const run = () => {
+    gifMessageElement.textContent = '';
+
     let properties;
     if (iterationsElement.value) {
+        totalIterations = parseInt(iterationsElement.value);
         properties = new Properties();
-        properties.numIterations(iterationsElement.value);
+        properties.numIterations(totalIterations);
     }
 
     const Fn = transitionerOptions[transitionerSelect.selectedIndex].maker;
@@ -61,15 +69,15 @@ const run = () => {
         || Fn(im1.getImage(), im2.getImage(), properties);
 
     gif = new GIF({
-        workers: 2,
+        workers: 8,
         quality: 10,
         width: im1.width,
         height: im2.height,
-        debug: true,
     });
 
     gif.on('finished', (blob) => {
-        window.open(URL.createObjectURL(blob));
+        document.getElementById('outputGif').src = URL.createObjectURL(blob);
+        gifMessageElement.textContent = 'Gif rendering complete:';
     });
 
     transitioner.run(cb);
