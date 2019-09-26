@@ -41,7 +41,7 @@ const cb = (currentImage, currentIteration, totalIterations) => {
 
     messageElement.textContent = `Iteration ${currentIteration} out of ${totalIterations}`;
 
-    gif.addFrame(ctx, { copy: true, delay: parseInt(1000 / totalIterations) });
+    setTimeout(() => gif.addFrame(ctx, { copy: true, delay: parseInt(1000 / totalIterations) }), 5);
 
     if (currentIteration === totalIterations) {
         finalize();
@@ -65,6 +65,7 @@ const run = () => {
         quality: 10,
         width: im1.width,
         height: im2.height,
+        debug: true,
     });
 
     gif.on('finished', (blob) => {
