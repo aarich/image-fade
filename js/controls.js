@@ -21,10 +21,7 @@ export default class Controls extends HTMLElement {
         wrapper.appendChild(document.createTextNode(' '));
         wrapper.appendChild(iterations);
 
-        wrapper.appendChild(this._makeButton(Controls.GO));
-        wrapper.appendChild(this._makeButton(Controls.STOP));
-        wrapper.appendChild(this._makeButton(Controls.RESET));
-        wrapper.appendChild(this._makeButton(Controls.SAMPLE));
+        Controls.getAllOptions().forEach((opt) => wrapper.appendChild(this._makeButton(opt)));
 
         this._selector = document.createElement('select');
         wrapper.appendChild(this._selector);
@@ -86,6 +83,10 @@ export default class Controls extends HTMLElement {
         return this._iterations.value ? parseInt(this._iterations.value) : this._defaultIterations;
     }
 
+    static getAllOptions() {
+        return [Controls.GO, Controls.STOP, Controls.RESET, Controls.SAMPLE, Controls.SWAP];
+    }
+
     static get STOP() {
         return 'Stop';
     }
@@ -100,5 +101,9 @@ export default class Controls extends HTMLElement {
 
     static get SAMPLE() {
         return 'Sample';
+    }
+
+    static get SWAP() {
+        return 'Swap';
     }
 }

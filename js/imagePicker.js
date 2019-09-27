@@ -61,14 +61,11 @@ export default class ImagePicker extends HTMLElement {
             this.image = new MyImage(this.ctx.getImageData(0, 0, img.width, img.height));
         };
         img.src = url;
+        this.url = url;
     }
 
     getImage() {
         return this.image;
-    }
-
-    getUrl() {
-        return this.url;
     }
 
     get selected() {

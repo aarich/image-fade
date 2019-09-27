@@ -107,6 +107,11 @@ controls.addEventListener('button', (e) => {
             im1.setImage(`./images/t${n1}.jpg`);
             im2.setImage(`./images/t${n2}.jpg`);
             return;
+        } case Controls.SWAP: {
+            const n1 = im1.url;
+            im1.setImage(im2.url);
+            im2.setImage(n1);
+            return;
         } default:
             // eslint-disable-next-line no-alert
             alert(`Unknown action: ${e.detail.action}`);

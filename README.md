@@ -13,4 +13,6 @@ A tool for creating *neat-o* transitions between images
 | Fade Type | Result |
 | ---       |:---:| 
 | Iterative | ![Sample Output Gif](/samples/sample1.gif) | 
-| Will there be more? | ? |
+| ML Powered | ? |
+| Dynamic Programming | ? |
+| Something else? | ? |
