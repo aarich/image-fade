@@ -9,7 +9,7 @@ export default class Controls extends HTMLElement {
 
         const titleSpan = document.createElement('span');
         titleSpan.setAttribute('title', 'Or, at least, the illusion of control');
-        titleSpan.textContent = 'Controls:';
+        titleSpan.textContent = 'Controls: ';
 
         const iterations = document.createElement('input');
         iterations.setAttribute('type', 'number');
@@ -18,6 +18,7 @@ export default class Controls extends HTMLElement {
 
         wrapper.appendChild(document.createElement('br'));
         wrapper.appendChild(titleSpan);
+        wrapper.appendChild(document.createTextNode(' '));
         wrapper.appendChild(iterations);
 
         wrapper.appendChild(this._makeButton(Controls.GO));

@@ -8,6 +8,7 @@ export default class ImagePicker extends HTMLElement {
 
         const wrapper = document.createElement('span');
         wrapper.setAttribute('class', 'wrapper');
+        wrapper.style.display = 'inline-block';
 
         const label = document.createElement('label');
         label.textContent = `${this.getAttribute('label')} `;
@@ -58,7 +59,6 @@ export default class ImagePicker extends HTMLElement {
             this.canvas.height = img.height;
             this.ctx.drawImage(img, 0, 0);
             this.image = new MyImage(this.ctx.getImageData(0, 0, img.width, img.height));
-            this.dispatchEvent(new Event('change'));
         };
         img.src = url;
     }
@@ -69,5 +69,9 @@ export default class ImagePicker extends HTMLElement {
 
     getUrl() {
         return this.url;
+    }
+
+    get selected() {
+        return this.image != null;
     }
 }

@@ -20,5 +20,6 @@ module.exports = {
     'import/extensions': [ 'error', { js: 'always'} ],
     'no-underscore-dangle' : 0,
     'radix': ["error", "as-needed"],
+    "indent": ['error', 4, { 'SwitchCase': 1 }]
   },
 };

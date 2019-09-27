@@ -20,6 +20,10 @@ export default class Transitioner {
         this.shouldStop = false;
     }
 
+    /**
+     * Applies the function fn at each pixel location
+     * @param {function} fn
+     */
     iterate(fn) {
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {

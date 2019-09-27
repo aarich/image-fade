@@ -7,13 +7,10 @@ customElements.define('fade-controls', Controls);
 
 let transitioner;
 
-let im1Selected = false;
-let im2Selected = false;
 const im1 = document.getElementById('im1');
 const im2 = document.getElementById('im2');
 
 const currentImageElement = document.getElementById('currentImage');
-const gifMessageElement = document.getElementById('gifMessage');
 
 const controls = document.getElementById('controls');
 controls.iterations = new Properties().iterations;
@@ -28,7 +25,7 @@ currentImageElement.addEventListener('load', () => {
 });
 
 const finalize = () => {
-    gifMessageElement.textContent = 'Rendering Gif Now. Please Wait.';
+    controls.message = 'Rendering Gif Now. Please Wait.';
     gif.render();
 };
 
@@ -48,9 +45,9 @@ const cb = (currentImage, currentIteration) => {
 };
 
 const run = () => {
-    gifMessageElement.textContent = '';
+    controls.message = '';
 
-    if (!im1Selected || !im2Selected) {
+    if (!im1.selected || !im2.selected) {
         // eslint-disable-next-line no-alert
         alert('Both images must be selected!');
         return;
@@ -73,46 +70,46 @@ const run = () => {
 
     gif.on('finished', (blob) => {
         document.getElementById('outputGif').src = URL.createObjectURL(blob);
-        gifMessageElement.textContent = 'Gif rendering complete:';
+        controls.message = 'Gif rendering complete. See Below.';
     });
 
     transitioner.run(cb);
 };
 
+const getTwoRand = (max) => {
+    const n1 = Math.ceil(Math.random() * Math.floor(max));
+    let n2 = n1;
+    while (n1 === n2) {
+        n2 = Math.ceil(Math.random() * Math.floor(max));
+    }
+    return { n1, n2 };
+};
+
 controls.addEventListener('button', (e) => {
     switch (e.detail.action) {
-    case Controls.STOP:
-        if (transitioner) {
-            transitioner.stop();
-        }
-        return;
-    case Controls.GO:
-        run();
-        return;
-    case Controls.RESET:
-        if (transitioner) {
-            transitioner.stop();
-        }
-        transitioner = null;
-        return;
-    case Controls.SAMPLE:
-        controls.iterations = 125;
-        im1.setImage('./images/t1.jpg');
-        im2.setImage('./images/t2.jpg');
-        im1Selected = true;
-        im2Selected = true;
-        return;
-    default:
-        // eslint-disable-next-line no-alert
-        alert(`Unknown action: ${e.detail.action}`);
-        break;
+        case Controls.STOP:
+            if (transitioner) {
+                transitioner.stop();
+            }
+            return;
+        case Controls.GO:
+            run();
+            return;
+        case Controls.RESET:
+            if (transitioner) {
+                transitioner.stop();
+            }
+            transitioner = null;
+            return;
+        case Controls.SAMPLE: {
+            controls.iterations = 125;
+            const { n1, n2 } = getTwoRand(9);
+            im1.setImage(`./images/t${n1}.jpg`);
+            im2.setImage(`./images/t${n2}.jpg`);
+            return;
+        } default:
+            // eslint-disable-next-line no-alert
+            alert(`Unknown action: ${e.detail.action}`);
+            break;
     }
-});
-
-im1.addEventListener('change', () => {
-    im1Selected = true;
-});
-
-im2.addEventListener('change', () => {
-    im2Selected = true;
 });
