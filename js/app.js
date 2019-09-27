@@ -1,10 +1,11 @@
 import ImagePicker from './imagePicker.js';
+import Controls from './controls.js';
 import { IterativeTransitioner, Properties } from './transitioners.js';
 
 customElements.define('image-picker', ImagePicker);
+customElements.define('fade-controls', Controls);
 
 let transitioner;
-let totalIterations = 150;
 
 let im1Selected = false;
 let im2Selected = false;
@@ -12,25 +13,18 @@ const im1 = document.getElementById('im1');
 const im2 = document.getElementById('im2');
 
 const currentImageElement = document.getElementById('currentImage');
-const messageElement = document.getElementById('message');
 const gifMessageElement = document.getElementById('gifMessage');
-const iterationsElement = document.getElementById('iterations');
-iterationsElement.setAttribute('placeholder', `Iterations (${new Properties().iterations})`);
-const transitionerSelect = document.getElementById('transitionerSelect');
-const transitionerOptions = [
+
+const controls = document.getElementById('controls');
+controls.iterations = new Properties().iterations;
+controls.setTransitioners([
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
-];
+]);
 
 let gif;
 
 currentImageElement.addEventListener('load', () => {
     gif.addFrame(currentImageElement, { copy: true, delay: 5 });
-});
-
-transitionerOptions.forEach((option) => {
-    const optionEl = document.createElement('option');
-    optionEl.textContent = option.name;
-    transitionerSelect.appendChild(optionEl);
 });
 
 const finalize = () => {
@@ -46,9 +40,9 @@ const cb = (currentImage, currentIteration) => {
     ctx.putImageData(currentImage.imageData, 0, 0);
     currentImageElement.src = canvas.toDataURL();
 
-    messageElement.textContent = `Iteration ${currentIteration} out of ${totalIterations}`;
+    controls.message = `Iteration ${currentIteration} out of ${controls.iterations}`;
 
-    if (currentIteration === totalIterations) {
+    if (currentIteration === controls.iterations) {
         finalize();
     }
 };
@@ -56,18 +50,19 @@ const cb = (currentImage, currentIteration) => {
 const run = () => {
     gifMessageElement.textContent = '';
 
-    let properties;
-    if (iterationsElement.value) {
-        totalIterations = parseInt(iterationsElement.value);
-        properties = new Properties();
-        properties.numIterations(totalIterations);
+    if (!im1Selected || !im2Selected) {
+        // eslint-disable-next-line no-alert
+        alert('Both images must be selected!');
+        return;
     }
 
-    const Fn = transitionerOptions[transitionerSelect.selectedIndex].maker;
+    const properties = new Properties();
+    properties.numIterations(controls.iterations);
 
     transitioner = transitioner
-        || Fn(im1.getImage(), im2.getImage(), properties);
+        || controls.makeTransitioner(im1.getImage(), im2.getImage(), properties);
 
+    // eslint-disable-next-line no-undef
     gif = new GIF({
         workers: 8,
         quality: 10,
@@ -84,40 +79,40 @@ const run = () => {
     transitioner.run(cb);
 };
 
-document.getElementById('stop').addEventListener('click', () => {
-    if (transitioner) {
-        transitioner.stop();
+controls.addEventListener('button', (e) => {
+    switch (e.detail.action) {
+    case Controls.STOP:
+        if (transitioner) {
+            transitioner.stop();
+        }
+        return;
+    case Controls.GO:
+        run();
+        return;
+    case Controls.RESET:
+        if (transitioner) {
+            transitioner.stop();
+        }
+        transitioner = null;
+        return;
+    case Controls.SAMPLE:
+        controls.iterations = 125;
+        im1.setImage('./images/t1.jpg');
+        im2.setImage('./images/t2.jpg');
+        im1Selected = true;
+        im2Selected = true;
+        return;
+    default:
+        // eslint-disable-next-line no-alert
+        alert(`Unknown action: ${e.detail.action}`);
+        break;
     }
-});
-
-document.getElementById('go').addEventListener('click', () => {
-    run();
-});
-
-document.getElementById('reset').addEventListener('click', () => {
-    if (transitioner) {
-        transitioner.stop();
-    }
-
-    transitioner = null;
-});
-
-document.getElementById('sample').addEventListener('click', () => {
-    iterationsElement.value = 150;
-    im1.setImage('./images/t1.jpg');
-    im2.setImage('./images/t2.jpg');
 });
 
 im1.addEventListener('change', () => {
     im1Selected = true;
-    if (im2Selected) {
-        run();
-    }
 });
 
 im2.addEventListener('change', () => {
     im2Selected = true;
-    if (im1Selected) {
-        run();
-    }
 });

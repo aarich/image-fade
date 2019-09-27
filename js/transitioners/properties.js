@@ -1,6 +1,6 @@
 export default class Properties {
     constructor() {
-        this._numIterations = 150;
+        this._numIterations = 125;
     }
 
     /**
