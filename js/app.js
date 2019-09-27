@@ -70,7 +70,7 @@ const cb = (currentImage, currentIteration) => {
     currentImageElement.src = canvas.toDataURL();
 
     if (webm) {
-        webm.add(ctx, parseInt(1000 / controls.iterations));
+        webm.add(ctx, parseInt(3000 / controls.iterations));
     }
 
     controls.message = `Iteration ${currentIteration} out of ${controls.iterations}`;
@@ -95,8 +95,8 @@ const run = () => {
     transitioner = transitioner
         || controls.makeTransitioner(im1.image, im2.image, properties);
 
-    // eslint-disable-next-line no-undef
     if (controls.gif) {
+        // eslint-disable-next-line no-undef
         gif = new GIF({
             workers: 6,
             quality: 10,

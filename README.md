@@ -10,12 +10,12 @@ A tool for creating *neat-o* transitions between images
 
 ### Resulting Fades
 
-| Fade Type | Result |
-| ---       |:---:| 
-| Greedy Iterative | ![Sample Output Gif](/samples/sample1.gif) | 
-| ML Powered | ? |
-| Dynamic Programming | ? |
-| Something else? | ? |
+| Fade Type | Result | WebM |
+| ---       |:---:| --- |
+| Greedy Iterative | ![Sample Output Gif](/samples/sample1.gif) | [WebM](/samples/sample1.webm) |
+| ML Powered |  | |
+| Dynamic Programming |  | |
+| [Something else?](https://github.com/aarich/image-fade/fork) |  | |
 
 ## Thanks
 
