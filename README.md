@@ -12,7 +12,7 @@ A tool for creating *neat-o* transitions between images
 
 | Fade Type | Result | WebM |
 | ---       |:---:| --- |
-| Greedy Iterative | ![Sample Output Gif](/samples/sample1.gif) | [WebM](/samples/sample1.webm) |
+| Greedy Iterative | ![Sample Output Gif](/samples/sample1.gif) | [WebM](https://github.mrarich.com/samples/sample1.webm) |
 | ML Powered |  | |
 | Dynamic Programming |  | |
 | [Something else?](https://github.com/aarich/image-fade/fork) |  | |
