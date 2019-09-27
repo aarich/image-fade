@@ -64,10 +64,6 @@ export default class ImagePicker extends HTMLElement {
         this.url = url;
     }
 
-    getImage() {
-        return this.image;
-    }
-
     get selected() {
         return this.image != null;
     }

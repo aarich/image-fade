@@ -26,10 +26,30 @@ export default class Controls extends HTMLElement {
         this._selector = document.createElement('select');
         wrapper.appendChild(this._selector);
 
+        wrapper.appendChild(document.createTextNode(' '));
+        this._gif = Controls._makeCheckBox('gif', wrapper);
+        wrapper.appendChild(document.createTextNode(' '));
+        this._webm = Controls._makeCheckBox('webm', wrapper);
+        this._webm.checked = true;
+
         this._message = document.createElement('p');
         wrapper.appendChild(this._message);
 
         shadow.appendChild(wrapper);
+    }
+
+    static _makeCheckBox(val, wrapper) {
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.setAttribute('id', val);
+
+        const label = document.createElement('Label');
+        label.setAttribute('for', `${val} `);
+        label.innerHTML = val;
+        wrapper.appendChild(cb);
+        wrapper.appendChild(label);
+
+        return cb;
     }
 
     _makeButton(action) {
@@ -81,6 +101,14 @@ export default class Controls extends HTMLElement {
 
     get iterations() {
         return this._iterations.value ? parseInt(this._iterations.value) : this._defaultIterations;
+    }
+
+    get gif() {
+        return this._gif.checked;
+    }
+
+    get webm() {
+        return this._webm.checked;
     }
 
     static getAllOptions() {

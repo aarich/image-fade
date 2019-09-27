@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Image Fade</title>
-    <script src="js/gif.js"></script>
+    <script src="js/vendor/gif.js"></script>
+    <script src="js/vendor/whammy.js"></script>
     <script src="js/app.js" defer type="module"></script>
   </head>
   <body>
@@ -17,14 +18,19 @@
         </span>
       </div>
       <fade-controls id="controls"></fade-controls>
-      <div>
-        <img id="currentImage"></image>
-      </div>
-      <div>
-        <p id="gifMessage"></p>
-        <img id="outputGif"></img>
-      </div>
     </form>
+
+    <div>
+      <img id="currentImage"></image>
+    </div>
+    <div>
+      <img id="outputGif"></img>
+    </div>
+    <div>
+      <video style="display:none" id="webm" width="150" height="150" controls autoplay loop></video>
+      <br>
+      <a style="display:none" id="download" download="fade.webm">Download WebM</a>
+    </div>
 
   </body>
 </html>

@@ -19,14 +19,46 @@ controls.setTransitioners([
 ]);
 
 let gif;
+let webm;
+const hideProcessingImage = () => {
+    currentImageElement.style.display = 'none';
+};
+
+const gifCallBack = (blob) => {
+    document.getElementById('outputGif').src = URL.createObjectURL(blob);
+    controls.message = 'Gif rendering complete.';
+    hideProcessingImage();
+};
+const webmCallBack = (blob) => {
+    controls.message = 'WebM rendering complete.';
+    const url = (window.webkitURL || window.URL).createObjectURL(blob);
+    const webmEl = document.getElementById('webm');
+    webmEl.src = url;
+    webmEl.style.display = '';
+    webmEl.width = im1.image.width;
+    webmEl.height = im1.image.height;
+    hideProcessingImage();
+};
 
 currentImageElement.addEventListener('load', () => {
-    gif.addFrame(currentImageElement, { copy: true, delay: 5 });
+    if (gif) {
+        gif.addFrame(currentImageElement, { copy: true, delay: 5 });
+    }
 });
 
 const finalize = () => {
-    controls.message = 'Rendering Gif Now. Please Wait.';
-    gif.render();
+    if (gif) {
+        gif.render();
+    }
+    if (webm) {
+        webm.compile(false, webmCallBack);
+    }
+
+    if (!gif && !webm) {
+        controls.message = 'Select gif and/or webm to save the fade or watch again';
+    } else {
+        controls.message = 'Rendering Gif and/or WebM Now. Please Wait.';
+    }
 };
 
 const cb = (currentImage, currentIteration) => {
@@ -36,6 +68,10 @@ const cb = (currentImage, currentIteration) => {
     canvas.height = currentImage.height;
     ctx.putImageData(currentImage.imageData, 0, 0);
     currentImageElement.src = canvas.toDataURL();
+
+    if (webm) {
+        webm.add(ctx, parseInt(1000 / controls.iterations));
+    }
 
     controls.message = `Iteration ${currentIteration} out of ${controls.iterations}`;
 
@@ -57,21 +93,24 @@ const run = () => {
     properties.numIterations(controls.iterations);
 
     transitioner = transitioner
-        || controls.makeTransitioner(im1.getImage(), im2.getImage(), properties);
+        || controls.makeTransitioner(im1.image, im2.image, properties);
 
     // eslint-disable-next-line no-undef
-    gif = new GIF({
-        workers: 8,
-        quality: 10,
-        width: im1.width,
-        height: im2.height,
-        workerScript: 'js/gif.worker.js',
-    });
+    if (controls.gif) {
+        gif = new GIF({
+            workers: 6,
+            quality: 10,
+            workerScript: 'js/vendor/gif.worker.js',
+        });
+        gif.on('finished', gifCallBack);
+    } else {
+        gif = null;
+    }
 
-    gif.on('finished', (blob) => {
-        document.getElementById('outputGif').src = URL.createObjectURL(blob);
-        controls.message = 'Gif rendering complete. See Below.';
-    });
+    // eslint-disable-next-line no-undef
+    webm = controls.webm ? new Whammy.Video() : null;
+
+    currentImageElement.style.display = '';
 
     transitioner.run(cb);
 };
