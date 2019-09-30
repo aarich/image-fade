@@ -1,6 +1,6 @@
 import ImagePicker from './imagePicker.js';
 import Controls from './controls.js';
-import { IterativeTransitioner, Properties } from './transitioners.js';
+import { Properties, IterativeTransitioner, AStarTransitioner } from './transitioners.js';
 
 customElements.define('image-picker', ImagePicker);
 customElements.define('fade-controls', Controls);
@@ -16,6 +16,7 @@ const controls = document.getElementById('controls');
 controls.iterations = new Properties().iterations;
 controls.setTransitioners([
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
+    { name: 'A*', maker: (...args) => new AStarTransitioner(...args) },
 ]);
 
 let gif;

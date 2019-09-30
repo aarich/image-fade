@@ -1,11 +1,4 @@
 export default class Pixel {
-    /**
-     *
-     * @param {number} r
-     * @param {number} g
-     * @param {number} b
-     * @param {number} a
-     */
     constructor(r, g, b, a) {
         this.r = r;
         this.g = g;
@@ -38,10 +31,25 @@ export default class Pixel {
         return new Pixel(this.r + v, this.g + v, this.b + v, this.a);
     }
 
+    /**
+     * Converts the pixel to gray scale by taking the average.
+     * TODO - improve this.
+     */
     convertToGrayScale() {
         const newValue = (this.r + this.g + this.b) / 3;
         this.r = newValue;
         this.g = newValue;
         this.b = newValue;
+    }
+
+    /**
+     * Returns true if both pixels have the same RGBA values
+     * @param {Pixel} other the pixel to compare
+     */
+    equals(other) {
+        return this.r === other.r
+            && this.g === other.g
+            && this.b === other.b
+            && this.a === other.a;
     }
 }
