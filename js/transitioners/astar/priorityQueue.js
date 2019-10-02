@@ -1,5 +1,6 @@
 export default class PriorityQueue {
     constructor() {
+        // TODO use a skiplist or something.
         this.arr = [];
     }
 
@@ -10,14 +11,9 @@ export default class PriorityQueue {
      */
     add(value, weight) {
         const node = { weight, value };
-        if (this.arr.length === 0) {
-            this.arr.push(node);
-            return;
-        }
 
         for (let i = 0; i < this.arr.length; i++) {
-            const currentNode = this.arr[i];
-            if (currentNode.weight > node.weight) {
+            if (this.arr[i].weight < node.weight) {
                 // Insert it before current node
                 this.arr.splice(i, 0, node);
                 return;

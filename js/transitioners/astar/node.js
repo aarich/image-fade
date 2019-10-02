@@ -10,7 +10,7 @@ export default class Node {
         this.x = x;
         this.y = y;
         this.diff = diff;
-        this.h = 0;
+        this.h = parent ? parent.h - Math.abs(diff) : 0;
         this.parent = parent || null;
     }
 
@@ -22,23 +22,44 @@ export default class Node {
      * Returns true if the other node has the same image as this one.
      * @param {Node} other the node to compare
      */
-    equals(other, startImage) {
-        const BreakException = {};
-        try {
-            startImage.iterate((x, y) => {
-                if (this.getPixelValue(x, y, startImage)
-                    .equals(other.getPixelValue(x, y, startImage))) {
-                    throw BreakException;
-                }
-            });
-        } catch (e) {
-            if (e !== BreakException) {
-                throw e;
-            }
-
+    equals(other) {
+        // check to see if we have all the same diffs.
+        const thisDiffs = this.diffDictionary;
+        const otherDiffs = other.diffDictionary;
+        if (thisDiffs.size !== otherDiffs.size) {
+            // can't be the same. unlikely once all pixels are modified though
             return false;
         }
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key of thisDiffs.keys()) {
+            if (thisDiffs.get(key) !== otherDiffs.get(key)) {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * @returns {Map<string, number>} map of keys containing x,y positions to the
+     * diff at that location
+     */
+    get diffDictionary() {
+        if (this._diffDictionary) {
+            return this._diffDictionary;
+        }
+
+        this._diffDictionary = new Map(this.parent ? this.parent.diffDictionary : []);
+        const key = Node.makeDiffKey(this.x, this.y);
+        const value = this._diffDictionary.get(key);
+        this._diffDictionary.set(key, value ? value + this.diff : this.diff);
+
+        return this._diffDictionary;
+    }
+
+    static makeDiffKey(x, y) {
+        return `${x},${y}`;
     }
 
     /**
@@ -49,16 +70,33 @@ export default class Node {
      * @param {MyImage} startingImage
      */
     getPixelValue(x, y, startingImage) {
-        let currentNode = this;
-        let diff = 0;
-        while (currentNode) {
-            if (currentNode.x === x && currentNode.y === y) {
-                diff += currentNode.diff;
-            }
+        const diff = this.diffDictionary.get(Node.makeDiffKey(x, y));
+        return startingImage.get(x, y).add(diff || 0);
+    }
 
-            currentNode = currentNode.parent;
+    /**
+     * determine if this node equals
+     * @param {MyImage} startingImage starting image
+     * @param {MyImage} goalImage goal image to check
+     * @param {number} scale integer scale
+     */
+    equalsImage(startingImage, goalImage, scale) {
+        const BreakException = {};
+        try {
+            startingImage.iterate((x, y) => {
+                if (x % scale === 0 && y % scale === 0) {
+                    if (!goalImage.get(x, y).equals(this.getPixelValue(x, y, startingImage))) {
+                        throw BreakException;
+                    }
+                }
+            });
+        } catch (error) {
+            if (error === BreakException) {
+                return false;
+            }
+            throw error;
         }
 
-        return startingImage.get(x, y).add(diff);
+        return true;
     }
 }

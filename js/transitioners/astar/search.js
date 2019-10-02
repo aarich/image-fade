@@ -7,25 +7,33 @@ export default class AStarSearch {
         this.output = outputImage;
         this.open = new PriorityQueue();
         this.closed = [];
-        this.open.add(new Node(0, 0, 0), 0);
+        const firstNode = new Node(0, 0, 0, null);
+        firstNode.h = this.initialH();
+        this.open.add(firstNode, 0);
+        this.scale = 1;
     }
 
-    run() {
+    run(callback) {
         let counter = 0;
         while (this.open.length > 0) {
             // eslint-disable-next-line no-plusplus
             counter++;
             if (counter > 100) {
                 setTimeout(() => {
-                    this.run();
+                    const path = this.run(callback);
+                    if (path) {
+                        this.executeCallback(path, callback);
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.log('nothing found');
+                    }
                 }, 5);
                 break;
             }
             const q = this.open.getAndRemoveLowest();
             const finalNode = this.makeChildrenAddToOpenList(q);
             if (finalNode) {
-                // Value only set if it's the final node (the goal)
-                console.log("FOUND THE END");
+                // finalNode only set if it's the final node (the goal)
                 return AStarSearch.makePath(finalNode);
             }
             this.closed.push(q);
@@ -67,13 +75,27 @@ export default class AStarSearch {
      * @param {Node} node the parent
      */
     makePossibleChildren(node) {
+        // TODO if all the children diffs are 1, 0, or -1 then you can do no better than that
+        // for the rest of the transition. So simply add that number to g and mark it as a result
+        // in the node so that when it is popped off the open list it can be identified as a goal
+        // node.
         const possibleChildren = [];
         this.input.iterate((x, y) => {
+            if (x % this.scale !== 0 || y % this.scale !== 0) {
+                // Only look at some pixels.
+                return;
+            }
             const diff = this.getDiff(node, x, y);
-            possibleChildren.push(this.makeNode(x, y, diff, node));
+            if (diff !== 0) {
+                possibleChildren.push(new Node(x, y, diff, node));
+            }
         });
 
-        return possibleChildren;
+        const goal = possibleChildren.find(
+            (n) => n.equalsImage(this.input, this.output, this.scale),
+        );
+
+        return goal || possibleChildren;
     }
 
     /**
@@ -109,9 +131,20 @@ export default class AStarSearch {
             }
         }
 
+        if (diff === 0) {
+            diff = desiredPixel.minus(currentPixel);
+            diff = diff !== 0 ? (diff / Math.abs(diff)) : 0; // convert to 1 / -1
+        }
+
         return diff;
     }
 
+    /**
+     * Return a list of all possible neigbors in one dimension but not exceeding the bounds
+     * @param {number} n the central number to look at
+     * @param {number} min lower bound (probably 0)
+     * @param {number} max upper bound (probably width or height)
+     */
     static getPossibleValues(n, min, max) {
         const options = [];
         if (n > min) {
@@ -131,6 +164,10 @@ export default class AStarSearch {
      * @param {Node} node a successor
      */
     shouldSkip(node) {
+        if (node.diff === 0) {
+            return true;
+        }
+
         for (let i = 0; i < this.open.length; i++) {
             if (this.open.get(i).equals(node, this.input)) {
                 return true;
@@ -147,28 +184,33 @@ export default class AStarSearch {
     }
 
     /**
-     * Make a node with the parameters
-     * @param {number} x
-     * @param {number} y
-     * @param {number} diff the change in pixel value at (x, y)
-     * @param {Node} parent the parent of the node to create
+     * Executes the app callback to update the UI and output renderers.
+     * @param {Array<Node>} path array of nodes to traverse
+     * @param {function} callback app callback function
      */
-    makeNode(x, y, diff, parent) {
-        const node = new Node(x, y, diff, parent);
-        node.h = this.calculateH(node);
-        return node;
+    executeCallback(path, callback) {
+        const image = this.input;
+        for (let i = 0; i < path.length; i++) {
+            const node = path[i];
+            for (let j = 0; j < this.scale && node.x + j < this.input.width; j++) {
+                for (let k = 0; k < this.scale && node.y + k < this.input.height; k++) {
+                    const lastPixel = image.get(node.x + j, node.y + k);
+                    image.setP(node.x + j, node.y + k, lastPixel.add(node.diff));
+                }
+            }
+
+            callback(image, i);
+        }
     }
 
-    /**
-     * Calculates the distance to the goal image
-     * @param {Node} node The node on which to calculate h
-     */
-    calculateH(node) {
-        let h = node.parent ? node.parent.h : 0;
-        const desiredPixel = this.output.get(node.x, node.y);
-        const currentPixel = node.getPixelValue(node.x, node.y, this.input);
-        h += Math.abs(desiredPixel.r - currentPixel.r);
-
+    initialH() {
+        let h = 0;
+        this.input.iterate((x, y) => {
+            // TODO move the iterate by scale method to image class
+            if (x % this.scale === 0 && y % this.scale === 0) {
+                h += Math.abs(this.input.get(x, y).minus(this.output.get(x, y)));
+            }
+        });
         return h;
     }
 }
