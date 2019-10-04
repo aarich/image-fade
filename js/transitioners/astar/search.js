@@ -40,7 +40,7 @@ export default class AStarSearch {
             if (path) {
                 this.executeCallback(path, callback);
             } else {
-                this.stats.numProcessed += this.closed.length;
+                this.stats.numProcessed = this.closed.length;
                 this.stats.currentOpenLength = this.open.length;
                 const next = this.open.peek();
                 this.stats.nextGValue = next.g;
