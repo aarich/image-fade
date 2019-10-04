@@ -2,6 +2,10 @@ import Node from './node.js';
 import PriorityQueue from './priorityQueue.js';
 
 export default class AStarSearch {
+    /**
+     * @param {MyImage} inputImage source image
+     * @param {MyImage} outputImage goal image
+     */
     constructor(inputImage, outputImage) {
         this.input = inputImage;
         this.output = outputImage;
@@ -81,15 +85,11 @@ export default class AStarSearch {
         // node.
         const possibleChildren = [];
         this.input.iterate((x, y) => {
-            if (x % this.scale !== 0 || y % this.scale !== 0) {
-                // Only look at some pixels.
-                return;
-            }
             const diff = this.getDiff(node, x, y);
             if (diff !== 0) {
                 possibleChildren.push(new Node(x, y, diff, node));
             }
-        });
+        }, this.scale);
 
         const goal = possibleChildren.find(
             (n) => n.equalsImage(this.input, this.output, this.scale),

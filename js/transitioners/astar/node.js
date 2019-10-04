@@ -12,6 +12,10 @@ export default class Node {
         this.diff = diff;
         this.h = parent ? parent.h - Math.abs(diff) : 0;
         this.parent = parent || null;
+
+        // This is true if the remaining changes are just +1, 0, or -1 changes.
+        // Remaining nodes can be extrapolated.
+        this.isEndInSight = false;
     }
 
     get f() {
@@ -23,11 +27,19 @@ export default class Node {
      * @param {Node} other the node to compare
      */
     equals(other) {
-        // check to see if we have all the same diffs.
+        if (this.isEndInSight) {
+            if (other.isEndInSight) {
+                // Not really true equality but make sense
+                return this.g === other.g;
+            }
+            return false;
+        }
+
+        // Check to see if we have all the same diffs.
         const thisDiffs = this.diffDictionary;
         const otherDiffs = other.diffDictionary;
         if (thisDiffs.size !== otherDiffs.size) {
-            // can't be the same. unlikely once all pixels are modified though
+            // Can't be the same. Unlikely once all pixels are modified though
             return false;
         }
 
@@ -84,12 +96,10 @@ export default class Node {
         const BreakException = {};
         try {
             startingImage.iterate((x, y) => {
-                if (x % scale === 0 && y % scale === 0) {
-                    if (!goalImage.get(x, y).equals(this.getPixelValue(x, y, startingImage))) {
-                        throw BreakException;
-                    }
+                if (!goalImage.get(x, y).equals(this.getPixelValue(x, y, startingImage))) {
+                    throw BreakException;
                 }
-            });
+            }, scale);
         } catch (error) {
             if (error === BreakException) {
                 return false;

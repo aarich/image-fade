@@ -21,10 +21,19 @@ export default class MyImage {
         });
     }
 
-    iterate(fn) {
+    /**
+     * Iterate over the pixels in the image
+     * @param {function} fn the function to apply at each (x, y)
+     * @param {number} s the scale. E.g. grid the image with grid-width s and 
+     *                   only call fn at those locations.
+     */
+    iterate(fn, s) {
+        const scale = s || 1;
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
-                fn(x, y);
+                if (x % scale === 0 && y % scale === 0) {
+                    fn(x, y);
+                }
             }
         }
     }
