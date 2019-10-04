@@ -26,6 +26,13 @@ export default class PriorityQueue {
     }
 
     /**
+     * Look at next element (but don't remove it)
+     */
+    peek() {
+        return this.arr[this.arr.length - 1].value;
+    }
+
+    /**
      * Removes and returns the lowest weighted element
      */
     getAndRemoveLowest() {

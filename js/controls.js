@@ -86,6 +86,13 @@ export default class Controls extends HTMLElement {
     }
 
     /**
+     * @param {number} i the index to select
+     */
+    set transitioner(i) {
+        this._selector.selectedIndex = i;
+    }
+
+    /**
      * A message to display below the controls
      * @param {string} m
      */
@@ -115,7 +122,8 @@ export default class Controls extends HTMLElement {
     }
 
     static getAllOptions() {
-        return [Controls.GO, Controls.STOP, Controls.RESET, Controls.SAMPLE, Controls.SWAP];
+        return [Controls.GO, Controls.STOP, Controls.RESET,
+            Controls.SAMPLE, Controls.LOWRES, Controls.SWAP];
     }
 
     static get STOP() {
@@ -136,5 +144,9 @@ export default class Controls extends HTMLElement {
 
     static get SWAP() {
         return 'Swap';
+    }
+
+    static get LOWRES() {
+        return 'LowRes A* Sample';
     }
 }

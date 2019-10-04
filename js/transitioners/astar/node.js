@@ -29,11 +29,8 @@ export default class Node {
      */
     equals(other) {
         if (this.isEndInSight) {
-            if (other.isEndInSight) {
-                // Not really true equality but make sense
-                return this.g === other.g;
-            }
-            return false;
+            // Not really true equality but should work
+            return other.isEndInSight && this.g === other.g;
         }
 
         // Check to see if we have all the same diffs.

@@ -152,6 +152,11 @@ controls.addEventListener('button', (e) => {
             im1.setImage(`./images/t${n1}.jpg`);
             im2.setImage(`./images/t${n2}.jpg`);
             return;
+        } case Controls.LOWRES: {
+            im1.setImage('./images/lowRes/t1.jpg');
+            im2.setImage('./images/lowRes/t3.jpg');
+            controls.transitioner = 1;
+            return;
         } case Controls.SWAP: {
             const n1 = im1.url;
             im1.setImage(im2.url);
