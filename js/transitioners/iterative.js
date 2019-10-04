@@ -1,5 +1,6 @@
 import Transitioner from './transitioner.js';
 
+/** @module IterativeTransitioner */
 export default class IterativeTransitioner extends Transitioner {
     run(callback) {
         this.input.convertToGrayScale();

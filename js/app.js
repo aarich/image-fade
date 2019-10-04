@@ -1,3 +1,8 @@
+/**
+ * @file
+ * See <a href="https://githb.com/aarich/image-fade">the github project</a>
+ * for more information.
+ */
 import ImagePicker from './imagePicker.js';
 import Controls from './controls.js';
 import { Properties, IterativeTransitioner, AStarTransitioner } from './transitioners.js';

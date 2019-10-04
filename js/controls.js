@@ -1,3 +1,4 @@
+/** @module Controls */
 export default class Controls extends HTMLElement {
     constructor() {
         super();
@@ -85,6 +86,7 @@ export default class Controls extends HTMLElement {
     }
 
     /**
+     * A message to display below the controls
      * @param {string} m
      */
     set message(m) {
@@ -92,6 +94,7 @@ export default class Controls extends HTMLElement {
     }
 
     /**
+     * Number of iterations to run
      * @param {number} i
      */
     set iterations(i) {

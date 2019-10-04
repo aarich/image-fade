@@ -1,5 +1,6 @@
 import Pixel from './pixel.js';
 
+/** @module MyImage */
 export default class MyImage {
     constructor(imageData) {
         this.imageData = imageData;
@@ -24,7 +25,7 @@ export default class MyImage {
     /**
      * Iterate over the pixels in the image
      * @param {function} fn the function to apply at each (x, y)
-     * @param {number} s the scale. E.g. grid the image with grid-width s and 
+     * @param {number} s the scale. E.g. grid the image with grid-width s and
      *                   only call fn at those locations.
      */
     iterate(fn, s) {

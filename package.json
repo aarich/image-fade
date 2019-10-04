@@ -11,7 +11,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -r ./out"
+    "clean": "rm -r ./out",
+    "doc": "rm -r ./out && ./node_modules/.bin/jsdoc js -r && open ./out/index.html"
   },
   "repository": {
     "type": "git",

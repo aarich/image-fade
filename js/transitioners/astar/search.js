@@ -1,6 +1,7 @@
 import Node from './node.js';
 import PriorityQueue from './priorityQueue.js';
 
+/** @module AStarSearch */
 export default class AStarSearch {
     /**
      * @param {MyImage} inputImage source image

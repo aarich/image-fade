@@ -1,3 +1,4 @@
+/** @module Properties */
 export default class Properties {
     constructor() {
         this._numIterations = 125;

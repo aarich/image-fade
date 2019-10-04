@@ -1,3 +1,4 @@
+/** @module Node */
 export default class Node {
     /**
      * @param {number} x position x

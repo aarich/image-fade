@@ -1,3 +1,4 @@
+/** @module Pixel */
 export default class Pixel {
     constructor(r, g, b, a) {
         this.r = r;

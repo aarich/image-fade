@@ -1,5 +1,6 @@
 import Properties from './properties.js';
 
+/** @module Transitioner */
 export default class Transitioner {
     constructor(image1, image2, properties) {
         if (image1.width !== image2.width) {

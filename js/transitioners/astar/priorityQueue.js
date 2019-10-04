@@ -1,3 +1,4 @@
+/** @module PriorityQueue */
 export default class PriorityQueue {
     constructor() {
         // TODO use a skiplist or something.

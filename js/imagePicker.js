@@ -1,5 +1,6 @@
 import MyImage from './image.js';
 
+/** @module ImagePicker */
 export default class ImagePicker extends HTMLElement {
     constructor() {
         super();
