@@ -22,4 +22,7 @@ module.exports = {
     'radix': ["error", "as-needed"],
     "indent": ['error', 4, { 'SwitchCase': 1 }]
   },
+  env: {
+    jest: true
+  },
 };

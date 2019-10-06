@@ -6,7 +6,7 @@ export default class PriorityQueue {
     }
 
     /**
-     * add an object to the queue
+     * Add an object to the queue
      * @param {object} value the value to store
      * @param {number} weight the weight associated with the value
      */
@@ -26,7 +26,7 @@ export default class PriorityQueue {
     }
 
     /**
-     * Look at next element (but don't remove it)
+     * Look at next (lowest) element (but don't remove it)
      */
     peek() {
         return this.arr[this.arr.length - 1].value;
@@ -43,6 +43,10 @@ export default class PriorityQueue {
         return this.arr.length;
     }
 
+    /**
+     * Returns the element at index i
+     * @param {number} i the index
+     */
     get(i) {
         return this.arr[i].value;
     }
