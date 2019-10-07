@@ -37,6 +37,7 @@
       "<rootDir>/node_modules/(?!@agm)"
     ],
     "verbose": true,
+    "coveragePathIgnorePatterns": ["<rootDir>/js/test/"],
     "notify": true
   },
   "homepage": "https://github.com/aarich/image-fade#readme",

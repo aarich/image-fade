@@ -11,8 +11,8 @@ export default class Node {
         this.x = x;
         this.y = y;
         this.diff = diff;
-        this.h = parent ? parent.h - Math.abs(diff) : 0;
         this.parent = parent || null;
+        this.h = parent ? parent.h - Math.abs(diff) : 0;
 
         // This is true if the remaining changes are just +1, 0, or -1 changes.
         // Remaining nodes can be extrapolated.
@@ -78,10 +78,11 @@ export default class Node {
      * @param {number} x
      * @param {number} y
      * @param {MyImage} startingImage
+     * @returns {number} pixel value at this position
      */
     getPixelValue(x, y, startingImage) {
         const diff = this.diffDictionary.get(Node.makeDiffKey(x, y));
-        return startingImage.get(x, y).add(diff || 0);
+        return startingImage.get(x, y) + (diff || 0);
     }
 
     /**
@@ -94,7 +95,7 @@ export default class Node {
         const BreakException = {};
         try {
             startingImage.iterate((x, y) => {
-                if (!goalImage.get(x, y).equals(this.getPixelValue(x, y, startingImage))) {
+                if (goalImage.get(x, y) !== this.getPixelValue(x, y, startingImage)) {
                     throw BreakException;
                 }
             }, scale);

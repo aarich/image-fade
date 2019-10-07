@@ -1,4 +1,5 @@
 /** @module Controls */
+/* eslint-env browser */
 export default class Controls extends HTMLElement {
     constructor() {
         super();

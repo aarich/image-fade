@@ -1,4 +1,5 @@
 import Node from '../../transitioners/astar/node.js';
+import { zeros50x50, hundreds50x50, ASI } from '../utilities.js';
 
 const top = new Node(0, 0, 0, null);
 
@@ -72,5 +73,37 @@ describe('node', () => {
         for (let i = 1; i < 10; i++) {
             expect(map.get(Node.makeDiffKey(i, i))).toEqual(i * 2);
         }
+    });
+
+    it('calculates pixel values', () => {
+        const node1 = new Node(1, 2, 3, top);
+        const node2 = new Node(1, 2, 3, node1);
+        const node3 = new Node(1, 3, 5, node2);
+
+        expect(node2.getPixelValue(1, 2, ASI(zeros50x50))).toEqual(6);
+        expect(node3.getPixelValue(1, 3, ASI(zeros50x50))).toEqual(5);
+        expect(node3.getPixelValue(1, 2, ASI(hundreds50x50))).toEqual(106);
+    });
+
+    it('compares against images', () => {
+        expect(top.equalsImage(ASI(zeros50x50), ASI(zeros50x50), 1)).toBe(true);
+        expect(top.equalsImage(ASI(zeros50x50), ASI(hundreds50x50), 1)).toBe(false);
+
+        let node = top;
+        zeros50x50.iterate((x, y) => {
+            node = new Node(x, y, 100, node);
+        });
+
+        expect(node.equalsImage(ASI(zeros50x50), ASI(hundreds50x50))).toBe(true);
+    });
+
+    it('compares against images at scale', () => {
+        let node = top;
+        const scale = 10;
+        zeros50x50.iterate((x, y) => {
+            node = new Node(x, y, 100, node);
+        }, scale);
+
+        expect(node.equalsImage(ASI(zeros50x50), ASI(hundreds50x50), scale)).toBe(true);
     });
 });

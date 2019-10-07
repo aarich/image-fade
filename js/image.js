@@ -1,6 +1,7 @@
 import Pixel from './pixel.js';
 
 /** @module MyImage */
+/* eslint-env browser */
 export default class MyImage {
     constructor(imageData) {
         this.imageData = imageData;

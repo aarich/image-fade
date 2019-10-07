@@ -1,5 +1,6 @@
 import Node from './node.js';
 import PriorityQueue from './priorityQueue.js';
+import AStarImage from './astarImage.js';
 
 /** @module AStarSearch */
 export default class AStarSearch {
@@ -9,8 +10,9 @@ export default class AStarSearch {
      * @param {number} scale sampling scale (1/scale pixels per side, 1 is 100%, 10 is 1/100 pixels)
      */
     constructor(inputImage, outputImage, scale) {
-        this.input = inputImage;
-        this.output = outputImage;
+        this.originalInputImage = inputImage;
+        this.input = new AStarImage(inputImage);
+        this.output = new AStarImage(outputImage);
         this.open = new PriorityQueue();
         this.closed = [];
         this.scale = scale;
@@ -25,7 +27,7 @@ export default class AStarSearch {
             return null;
         }
 
-        for (let i = 0; i < 800 && this.open.length > 0; i++) {
+        for (let i = 0; i < 10 && this.open.length > 0; i++) {
             const q = this.open.getAndRemoveLowest();
             const finalNode = q.endInSight ? q : this.makeChildrenAddToOpenList(q);
             if (finalNode) {
@@ -36,17 +38,17 @@ export default class AStarSearch {
         }
 
         setTimeout(() => {
+            this.stats.numProcessed = this.closed.length;
+            this.stats.currentOpenLength = this.open.length;
+            const next = this.open.peek();
+            this.stats.nextGValue = next.g;
+            this.stats.nextHValue = next.h;
+            // eslint-disable-next-line no-console
+            console.table(this.stats);
+
             const path = this.run(callback);
             if (path) {
                 this.executeCallback(path, callback);
-            } else {
-                this.stats.numProcessed = this.closed.length;
-                this.stats.currentOpenLength = this.open.length;
-                const next = this.open.peek();
-                this.stats.nextGValue = next.g;
-                this.stats.nextHValue = next.h;
-                // eslint-disable-next-line no-console
-                console.table(this.stats);
             }
         }, 5);
 
@@ -68,7 +70,7 @@ export default class AStarSearch {
     }
 
     /**
-     * returns all valid children of a given image instance
+     * Returns all valid children of a given image instance
      * @param {Node} node the parent
      */
     makeChildrenAddToOpenList(node) {
@@ -91,31 +93,103 @@ export default class AStarSearch {
      */
     makePossibleChildren(node) {
         const possibleChildren = [];
-        const endInSight = this.input.iterate((x, y, tinyDiffs) => {
-            const diff = this.getDiff(node, x, y);
-            if (diff > 1 || diff < -1) {
-                possibleChildren.push(new Node(x, y, diff, node));
-            }
 
-            return tinyDiffs && (diff >= -1 && diff <= 1);
-        }, this.scale, true);
-
-        if (endInSight) {
-            // Create a dummy node representing the end.
-            const endingNode = new Node(0, 0, 0, node);
-            endingNode.endInSight = true;
-            return [endingNode];
-        }
+        this.input.iterate((x, y) => {
+            const diffs = this.getPossibleDiffs(node, x, y);
+            diffs.forEach((diff) => {
+                const newNode = new Node(x, y, diff.diff, node);
+                newNode.h = node.h + diff.deltaH;
+                possibleChildren.push(newNode);
+            });
+        }, this.scale);
 
         const goal = possibleChildren.find(
             (n) => n.equalsImage(this.input, this.output, this.scale),
         );
 
-        if (goal) {
-            return goal;
+        return goal || possibleChildren;
+    }
+
+    // /**
+    //  * Makes all possible children of a given node.
+    //  * @param {Node} node the parent
+    //  */
+    // makePossibleChildren(node) {
+    //     const possibleChildren = [];
+    //     const endInSight = this.input.iterate((x, y, tinyDiffs) => {
+    //         const diff = this.getDiff(node, x, y);
+    //         if (diff > 1 || diff < -1) {
+    //             possibleChildren.push(new Node(x, y, diff, node));
+    //         }
+
+    //         return tinyDiffs && (diff >= -1 && diff <= 1);
+    //     }, this.scale, true);
+
+    //     if (endInSight) {
+    //         // Create a dummy node representing the end.
+    //         const endingNode = new Node(0, 0, 0, node);
+    //         endingNode.endInSight = true;
+    //         return [endingNode];
+    //     }
+
+    //     const goal = possibleChildren.find(
+    //         (n) => n.equalsImage(this.input, this.output, this.scale),
+    //     );
+
+    //     if (goal) {
+    //         return goal;
+    //     }
+
+    //     return possibleChildren;
+    // }
+
+    /**
+     * Returns numeric values for all possible diffs from the current pixel
+     * @param {Node} parent the parent node
+     * @param {number} x
+     * @param {number} y
+     * @returns {number[]} an array of possible diffs.
+     */
+    getPossibleDiffs(parent, x, y) {
+        const currentPixel = parent.getPixelValue(x, y, this.input);
+        const desiredPixel = this.output.get(x, y);
+
+        const posX = AStarSearch.getPossibleValues(x, 0, this.input.width - 1);
+        const posY = AStarSearch.getPossibleValues(y, 0, this.input.height - 1);
+
+        const diffs = [];
+
+        const addIfNeeded = (diff) => {
+            if (!diffs.find((d) => d.diff === diff)) {
+                const currentDiff = desiredPixel - currentPixel;
+                const newDiff = desiredPixel - (currentPixel + diff);
+                diffs.push({ diff, deltaH: newDiff - currentDiff });
+            }
+        };
+
+        for (let i = 0; i < posX.length; i++) {
+            for (let j = 0; j < posY.length; j++) {
+                let option;
+                if (posX[i] === x && posY[j] === y) {
+                    // No need to recalculate
+                    option = currentPixel;
+                } else {
+                    option = parent.getPixelValue(posX[i], posY[j], this.input);
+                }
+                const diff = option - currentPixel;
+
+                addIfNeeded(diff);
+            }
         }
 
-        return possibleChildren;
+        // Add the options for just fading.
+        [-1, 1].forEach((diff) => {
+            if (currentPixel + diff >= 0 && currentPixel + diff <= 255) {
+                addIfNeeded(diff);
+            }
+        });
+
+        return diffs;
     }
 
     /**
@@ -209,7 +283,7 @@ export default class AStarSearch {
      * @param {function} callback app callback function
      */
     executeCallback(path, callback) {
-        const image = this.input;
+        const image = this.originalInputImage;
         for (let i = 0; i < path.length; i++) {
             const node = path[i];
             if (node.isEndInSight) {
@@ -219,7 +293,7 @@ export default class AStarSearch {
                 for (let x = node.x; x < node.x + this.scale && x < this.input.width; x++) {
                     // eslint-disable-next-line prefer-destructuring
                     for (let y = node.y; y < node.y + this.scale && y < this.input.height; y++) {
-                        image.setP(x, y, image.get(x, y).add(node.diff));
+                        image.setG(x, y, image.get(x, y).add(node.diff));
                     }
                 }
             }
@@ -228,16 +302,22 @@ export default class AStarSearch {
         }
     }
 
+    /**
+     * Finishes the fading to the goal image once the last node was passed
+     * @param {MyImage} image the last image generated
+     * @param {function} callback app callback function
+     * @param {number} lastNum last iteration
+     */
     finishFading(image, callback, lastNum) {
         let differences = true;
         for (let i = lastNum; differences; i++) {
             differences = image.iterate((x, y, diffs) => {
                 const desiredPixel = this.output.get(x, y);
                 const currentPixel = image.get(x, y);
-                let diff = desiredPixel.minus(currentPixel);
+                let diff = desiredPixel - currentPixel;
                 // convert to 1 / -1
                 diff = diff !== 0 ? (diff / Math.abs(diff)) : 0;
-                image.setP(currentPixel.add(diff));
+                image.setG(currentPixel + diff);
                 return diffs && diff !== 0;
             }, 1, false);
 
@@ -251,7 +331,7 @@ export default class AStarSearch {
     initialH() {
         let h = 0;
         this.input.iterate((x, y) => {
-            h += Math.abs(this.input.get(x, y).minus(this.output.get(x, y)));
+            h += Math.abs(this.input.get(x, y) - this.output.get(x, y));
         }, this.scale);
         return h;
     }
