@@ -7,8 +7,8 @@ export default class AStarTransitioner extends Transitioner {
         this.input.convertToGrayScale();
         this.output.convertToGrayScale();
 
-        this.search = new AStarSearch(this.input, this.output, 10);
-        this.search.run(callback);
+        this.search = new AStarSearch(this.input, this.output, 5);
+        this.search.run(callback, 100, true);
     }
 
     stop() {

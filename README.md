@@ -13,9 +13,9 @@ A tool for creating *neat-o* transitions between images
 | Fade Type | Result | WebM |
 | ---       |:---:| --- |
 | Greedy Iterative | ![Sample Output Gif](/samples/sample1.gif) | [WebM](https://github.mrarich.com/samples/sample1.webm) |
-| A* Search |  | |
+| A* Search | It is really slow | |
+| Bidirectional A* Search |  | |
 | ML Powered |  | |
-| Dynamic Programming |  | |
 | [Something else?](https://github.com/aarich/image-fade/fork) |  | |
 
 ## Thanks

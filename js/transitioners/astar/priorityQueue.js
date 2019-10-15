@@ -1,53 +1,103 @@
-/** @module PriorityQueue */
+import NodeSet from './nodeSet.js';
+
+/** @module PriorityQueue Implemented with a min heap and tree */
 export default class PriorityQueue {
     constructor() {
-        // TODO use a skiplist or something.
         this.arr = [];
+        this.nodeSet = new NodeSet();
     }
 
     /**
-     * Add an object to the queue
-     * @param {object} value the value to store
-     * @param {number} weight the weight associated with the value
+     * Add a node to the heap
+     * @param {Node} node the new node to add
      */
-    add(value, weight) {
-        const node = { weight, value };
+    add(node) {
+        this.arr.push(node);
+        this._bubbleUp();
+        this.nodeSet.add(node);
+    }
 
-        for (let i = 0; i < this.arr.length; i++) {
-            if (this.arr[i].weight < node.weight) {
-                // Insert it before current node
-                this.arr.splice(i, 0, node);
-                return;
+    _bubbleUp() {
+        // Bubbling up the last added element
+        let index = this.arr.length - 1;
+        while (index > 0) {
+            const element = this.arr[index];
+            const parentIndex = Math.floor((index - 1) / 2);
+            const parent = this.arr[parentIndex];
+            if (parent.h <= element.h) {
+                // We're good because the parent is less than the element
+                break;
             }
+
+            // Swap
+            this.arr[index] = parent;
+            this.arr[parentIndex] = element;
+            index = parentIndex;
+        }
+    }
+
+    getAndRemoveLowest() {
+        if (this.arr.length === 1) {
+            return this.arr.pop();
         }
 
-        // It's the smallest one.
-        this.arr.push(node);
+        const element = this.arr[0];
+        this.arr[0] = this.arr.pop();
+        this._bubbleDown(0);
+        return element;
+    }
+
+    _bubbleDown(index) {
+        const left = 2 * index + 1;
+        const right = left + 1;
+        let smallest = index;
+
+        if (left < this.length && this.arr[left].h < this.arr[smallest].h) {
+            smallest = left;
+        }
+
+        if (right < this.length && this.arr[right].h < this.arr[smallest].h) {
+            smallest = right;
+        }
+
+        // Swap if needed
+        if (smallest !== index) {
+            [this.arr[smallest], this.arr[index]] = [this.arr[index], this.arr[smallest]];
+            this._bubbleDown(smallest);
+        }
     }
 
     /**
      * Look at next (lowest) element (but don't remove it)
      */
     peek() {
-        return this.arr[this.arr.length - 1].value;
+        return this.arr[0];
     }
 
     /**
-     * Removes and returns the lowest weighted element
+     * The length of the open list
      */
-    getAndRemoveLowest() {
-        return this.arr.pop().value;
-    }
-
     get length() {
         return this.arr.length;
     }
 
+    get closedLength() {
+        return this.nodeSet.size - this.arr.length;
+    }
+
     /**
-     * Returns the element at index i
-     * @param {number} i the index
+     * Checks in the open and closed lists to see if
+     * the node has been seen before
+     * @param {Node} node the node to check
      */
-    get(i) {
-        return this.arr[i].value;
+    doesAllSeenHaveThisNode(node) {
+        return this.nodeSet.has(node);
+    }
+
+    /**
+     * Space saving operation. We will probably never reach these elements...
+     */
+    cull() {
+        this.arr.splice(Math.floor(this.arr.length / 10));
     }
 }
