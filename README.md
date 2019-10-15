@@ -18,6 +18,10 @@ A tool for creating *neat-o* transitions between images
 | ML Powered |  | |
 | [Something else?](https://github.com/aarich/image-fade/fork) |  | |
 
+### Contribute
+
+Adding a new transitioner is easy! Just create a new transitioner class and add it to `app.js`.
+
 ## Thanks
 
 * [gif.js](https://github.com/jnordberg/gif.js)
