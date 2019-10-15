@@ -75,29 +75,36 @@ describe('search', () => {
         const node1c = new Node(1, 2, 3, node1b);
 
         const node2a = new Node(4, 5, 7, top);
-        // equivalent to node1
+
+        // node2b is equivalent to node1c
         const node2b = new Node(1, 2, 6, node2a);
-        // not equivalen to any of node1x
+
+        // not equivalent to any of node1x
         const node2c = new Node(1, 2, 6, node2b);
 
 
         it('checks open list for skipping a new node', () => {
             const search = new AStarSearch(zeros50x50, hundreds50x50, 1);
-            search.open.add(node1c, 50);
+            search.open.add(node1c);
 
-            expect(search.shouldSkip(node2b)).toBe(true);
-            expect(search.shouldSkip(node2c)).toBe(false);
+            expect(search.shouldSkip(node2b)).toEqual(true);
+            expect(search.shouldSkip(node2c)).toEqual(false);
         });
 
         it('checks closed list for skipping a new node', () => {
             const search = new AStarSearch(zeros50x50, hundreds50x50, 1);
-            search.closed.push(node1c);
+            search.open.add(node1c);
 
-            expect(search.shouldSkip(node2b)).toBe(true);
-            expect(search.shouldSkip(node2c)).toBe(false);
+            expect(search.open.getAndRemoveLowest()).toBe(node1c);
+            expect(search.open.length).toEqual(1); // initial dummy node should still be there
+            search.open.getAndRemoveLowest();
+            expect(search.open.length).toEqual(0);
+
+            expect(search.shouldSkip(node2b)).toEqual(true);
+            expect(search.shouldSkip(node2c)).toEqual(false);
         });
 
-        it('skips 0 diff nodes (shouldn\'t happen anyway, though', () => {
+        it('skips 0 diff nodes', () => {
             const search = new AStarSearch(zeros50x50, hundreds50x50, 1);
             expect(search.shouldSkip(new Node(5, 5, 0, top))).toBe(true);
         });
@@ -122,6 +129,104 @@ describe('search', () => {
             // 3 options : 0, 1, 2, 3, 4 (because +1)
             // the actual diffs are the number minus the option
             expect(nodes.length).toEqual(17);
+        });
+    });
+
+    describe('calculates h properly', () => {
+        test('basic h calculations', () => {
+            let node = top;
+            let h = 100;
+            node.h = h;
+            for (let i = 0; i < 10; i++) {
+                node = new Node(0, 0, i, node);
+                h -= i;
+                expect(node.h).toEqual(h);
+            }
+        });
+
+        test.each([1, 5, 10])('diffs with scale %i', (scale) => {
+            const search = new AStarSearch(zeros50x50, hundreds50x50, scale);
+            const startingH = search.open.peek().h;
+            expect(startingH).toEqual((100 * 50 * 50) / (scale * scale));
+            const children = search.makePossibleChildren(search.open.peek());
+            children.forEach((child) => {
+                // These diffs are all in the correct direction
+                // since they are bounded by 0
+                expect(child.h).toEqual(startingH - child.diff);
+            });
+        });
+
+        test.each([1, 5, 10])('diffs in all directions with scale %i', (scale) => {
+            const search = new AStarSearch(zeros50x50, hundreds50x50, scale);
+            const firstNode = search.open.peek();
+
+            // Create a node that makes it halfway to 100 at (10, 10)
+            // We can accept default h calculation because the diff is in the right way
+            const halfwayNode = new Node(10, 10, 50, firstNode);
+            const children = search.makePossibleChildren(halfwayNode);
+            const foundDiffs = [false, false, false, false];
+            children.forEach((child) => {
+                expect(child.h).toEqual(halfwayNode.h - child.diff);
+                if (child.x === 10 && child.y === 10) {
+                    foundDiffs[[-1, 0, 1, -50].indexOf(child.diff)] = true;
+                }
+            });
+
+            // We should have found all the diffs
+            expect(foundDiffs.includes(false)).toEqual(false);
+        });
+
+        test.each([1, 2, 5, 10])('diffs in the wrong direction with scale %i', (scale) => {
+            const search = new AStarSearch(zeros50x50, hundreds50x50, scale);
+            const firstNode = search.open.peek();
+            const pos = 10;
+
+            // Create a node that makes it to 100 at (10, 10)
+            const madeItNode = new Node(pos, pos, 100, firstNode);
+            const children = search.makePossibleChildren(madeItNode);
+            const foundDiffs = [false, false, false, false];
+            children.forEach((child) => {
+                if (child.x === pos && child.y === pos) {
+                    foundDiffs[[-1, 0, 1, -100].indexOf(child.diff)] = true;
+                    // All the diffs are going to be in the wrong direction
+                    expect(child.h).toEqual(madeItNode.h + Math.abs(child.diff));
+                } else {
+                    expect(child.h).toEqual(madeItNode.h - child.diff);
+                }
+            });
+
+            // We should have found all the diffs
+            expect(foundDiffs.includes(false)).toEqual(false);
+        });
+
+        test('diffs with overshoot', () => {
+            const search = new AStarSearch(zeros50x50, hundreds50x50, 1);
+            const firstNode = search.open.peek();
+            const pos = 10;
+
+            // Create a node that is at 75 at (11, 10) and 125 at (10, 10)
+            const node75 = new Node(pos + 1, pos, 75, firstNode);
+            const node125 = new Node(pos, pos, 125, node75);
+            const children = search.makePossibleChildren(node125);
+            const foundDiffs = [false, false, false, false, -125];
+            children.forEach((child) => {
+                if (child.x === pos && child.y === pos) {
+                    foundDiffs[[-1, 0, 1, -50, -125].indexOf(child.diff)] = true;
+                    if (child.diff === -50) {
+                        expect(child.h).toEqual(node125.h);
+                    } else if (child.diff === -125) {
+                        // We were 25 away but now we are 100 away.
+                        expect(child.h).toEqual(node125.h + 75);
+                    } else {
+                        // the correct direction is down from 125, so negative
+                        // diffs will decrease h.
+                        expect(child.h).toEqual(node125.h + child.diff);
+                    }
+                }
+            });
+
+            // We should have found all the diffs
+            expect(foundDiffs.includes(false)).toEqual(false);
         });
     });
 });

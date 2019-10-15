@@ -108,4 +108,26 @@ export default class Node {
 
         return true;
     }
+
+    /**
+     * Return true if this node is equivalent to the otherNode originating
+     * from the opposite search
+     * @param {Node} otherNode the opposite node to compare against
+     * @param {AStarImage} inputImage the input image to this search
+     * @param {AStarImage} outputImage the output image to this search
+     * @param {number} scale the scale of the search
+     */
+    equalsOppositeNode(otherNode, inputImage, outputImage, scale) {
+        const totalDiffDictionary = new Map(this.diffDictionary);
+        otherNode.diffDictionary.forEach((value, key) => {
+            const total = totalDiffDictionary.get(key);
+            // The subtraction is because one comes from the start
+            // while the opposite comes from the goal
+            totalDiffDictionary.set(key, total - value);
+        });
+
+        const fakeNode = new Node(0, 0, 0, null);
+        fakeNode._diffDictionary = totalDiffDictionary;
+        return fakeNode.equalsImage(inputImage, outputImage, scale);
+    }
 }

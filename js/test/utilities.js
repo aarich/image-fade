@@ -24,6 +24,10 @@ const smallImage0s = new Uint8ClampedArray(2 * 2 * 4);
 const smallImage0sData = makeFakeImageData(smallImage0s, 2, 2);
 export const zeros2x2 = new MyImage(smallImage0sData);
 
+/**
+ * returns a single pixel MyImage
+ * @param {number} val the pixel value
+ */
 export const singlePixelImage = (val) => {
     const arr = new Uint8ClampedArray([val, val, val, 0]);
     return new MyImage(makeFakeImageData(arr, 1, 1));

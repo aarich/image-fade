@@ -3,9 +3,15 @@
  * See <a href="https://githb.com/aarich/image-fade">the github project</a>
  * for more information.
  */
+/* eslint-env browser */
 import ImagePicker from './imagePicker.js';
 import Controls from './controls.js';
-import { Properties, IterativeTransitioner, AStarTransitioner } from './transitioners.js';
+import {
+    Properties,
+    IterativeTransitioner,
+    AStarTransitioner,
+    BidirectionalAStarTransitioner,
+} from './transitioners.js';
 
 customElements.define('image-picker', ImagePicker);
 customElements.define('fade-controls', Controls);
@@ -22,6 +28,7 @@ controls.iterations = new Properties().iterations;
 controls.setTransitioners([
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
     { name: 'A*', maker: (...args) => new AStarTransitioner(...args) },
+    { name: 'Bidirectional A*', maker: (...args) => new BidirectionalAStarTransitioner(...args) },
 ]);
 
 let gif;

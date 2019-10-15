@@ -1,5 +1,5 @@
 import Node from '../../transitioners/astar/node.js';
-import { zeros50x50, hundreds50x50, ASI } from '../utilities.js';
+import { zeros50x50, hundreds50x50, ASI, singlePixelImage } from '../utilities.js';
 
 const top = new Node(0, 0, 0, null);
 
@@ -39,17 +39,6 @@ describe('node', () => {
         for (let i = 1; i < 10; i++) {
             node = new Node(0, 0, 0, node);
             expect(node.g).toEqual(i);
-        }
-    });
-
-    it('calculates h properly', () => {
-        let node = top;
-        let h = 100;
-        node.h = h;
-        for (let i = 0; i < 10; i++) {
-            node = new Node(0, 0, i, node);
-            h -= i;
-            expect(node.h).toEqual(h);
         }
     });
 
@@ -105,5 +94,25 @@ describe('node', () => {
         }, scale);
 
         expect(node.equalsImage(ASI(zeros50x50), ASI(hundreds50x50), scale)).toBe(true);
+    });
+
+    describe('equalsOppositeNode', () => {
+        it('returns false for non-equivalent opposite nodes', () => {
+            const input = ASI(singlePixelImage(0));
+            const output = ASI(singlePixelImage(10));
+            const node1 = new Node(0, 0, 5, top);
+            const node2 = new Node(0, 0, 5, top);
+
+            expect(node1.equalsOppositeNode(node2, input, output, 1)).toEqual(false);
+        });
+
+        it('returns true for equivalent opposite nodes', () => {
+            const input = ASI(singlePixelImage(0));
+            const output = ASI(singlePixelImage(10));
+            const node1 = new Node(0, 0, 5, top);
+            const node2 = new Node(0, 0, -5, top);
+
+            expect(node1.equalsOppositeNode(node2, input, output, 1)).toEqual(true);
+        });
     });
 });
