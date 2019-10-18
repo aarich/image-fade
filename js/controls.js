@@ -148,6 +148,6 @@ export default class Controls extends HTMLElement {
     }
 
     static get LOWRES() {
-        return 'LowRes A* Sample';
+        return 'A* Sample';
     }
 }

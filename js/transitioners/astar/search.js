@@ -51,6 +51,8 @@ export default class AStarSearch {
             this.closed.add(q);
         }
 
+        this.open.cull();
+
         this.stats.numProcessed += numTimes;
         this.stats.currentOpenLength = this.open.length;
         const next = this.open.peek();
@@ -60,9 +62,9 @@ export default class AStarSearch {
             setTimeout(() => {
                 // eslint-disable-next-line no-console
                 console.table(this.stats);
-                const path = this.run(callback);
+                const path = this.run(callback, numTimes, callSelf);
                 if (path) {
-                    executeCallback(path, callback);
+                    executeCallback(path, callback, this.originalInputImage, this.scale);
                 }
             }, 5);
         }
@@ -113,10 +115,6 @@ export default class AStarSearch {
             const diffs = this.getPossibleDiffs(node, x, y);
             const pixelChildren = [];
             diffs.forEach((diff) => {
-                if (diff <= 1 && diff >= -1) {
-                    // we don't care about these for now.
-                    return;
-                }
                 const newNode = new Node(x, y, diff.diff, node);
                 newNode.h = node.h + diff.deltaH;
                 pixelChildren.push(newNode);
