@@ -9,6 +9,7 @@ import Controls from './controls.js';
 import {
     Properties,
     IterativeTransitioner,
+    BidirectionalIterativeTransitioner,
     AStarTransitioner,
     BidirectionalAStarTransitioner,
 } from './transitioners.js';
@@ -27,6 +28,7 @@ const controls = document.getElementById('controls');
 controls.iterations = new Properties().iterations;
 controls.setTransitioners([
     { name: 'Iterative', maker: (...args) => new IterativeTransitioner(...args) },
+    { name: 'Bidirectional Iterative', maker: (...args) => new BidirectionalIterativeTransitioner(...args) },
     { name: 'A*', maker: (...args) => new AStarTransitioner(...args) },
     { name: 'Bidirectional A*', maker: (...args) => new BidirectionalAStarTransitioner(...args) },
 ]);
@@ -74,7 +76,8 @@ const finalize = () => {
     }
 };
 
-const cb = (currentImage, currentIteration) => {
+const cb = (currentImage, currentIteration, totalIterations) => {
+    const totalIters = totalIterations || controls.iterations;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = currentImage.width;
@@ -83,12 +86,12 @@ const cb = (currentImage, currentIteration) => {
     currentImageElement.src = canvas.toDataURL();
 
     if (webm) {
-        webm.add(ctx, parseInt(3000 / controls.iterations));
+        webm.add(ctx, parseInt(3000 / totalIters));
     }
 
-    controls.message = `Iteration ${currentIteration} out of ${controls.iterations}`;
+    controls.message = `Iteration ${currentIteration} out of ${totalIters}`;
 
-    if (currentIteration === controls.iterations) {
+    if (currentIteration === totalIters) {
         finalize();
     }
 };
@@ -162,7 +165,7 @@ controls.addEventListener('button', (e) => {
         } case Controls.LOWRES: {
             im1.setImage('./images/lowRes/t1.jpg');
             im2.setImage('./images/lowRes/t3.jpg');
-            controls.transitioner = 1;
+            controls.transitioner = 2;
             return;
         } case Controls.SWAP: {
             const n1 = im1.url;

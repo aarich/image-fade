@@ -69,6 +69,7 @@ export default class PriorityQueue {
 
     /**
      * Look at next (lowest) element (but don't remove it)
+     * @returns {Node} the next node
      */
     peek() {
         return this.arr[0];
@@ -98,6 +99,8 @@ export default class PriorityQueue {
      * Space saving operation. We will probably never reach these elements...
      */
     cull() {
-        this.arr.splice(Math.floor(this.arr.length / 10));
+        const nextH = this.peek().h;
+        // Use nextH to decide how many more nodes to keep
+        this.arr.splice(Math.max(nextH * 5, 500));
     }
 }
