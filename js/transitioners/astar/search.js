@@ -51,16 +51,15 @@ export default class AStarSearch {
             this.closed.add(q);
         }
 
+        this.stats.numProcessed += numTimes;
+        this.stats.currentOpenLength = this.open.length;
+        const next = this.open.peek();
+        this.stats.nextGValue = next.g;
+        this.stats.nextHValue = next.h;
         if (callSelf) {
             setTimeout(() => {
-                this.stats.numProcessed += 100;
-                this.stats.currentOpenLength = this.open.length;
-                const next = this.open.peek();
-                this.stats.nextGValue = next.g;
-                this.stats.nextHValue = next.h;
                 // eslint-disable-next-line no-console
                 console.table(this.stats);
-
                 const path = this.run(callback);
                 if (path) {
                     executeCallback(path, callback);
@@ -107,16 +106,29 @@ export default class AStarSearch {
      * Makes all possible children of a given node.
      * @param {Node} node the parent
      */
-    makePossibleChildren(node) {
+    makePossibleChildren(node, branchingFactor) {
         const possibleChildren = [];
 
         this.input.iterate((x, y) => {
             const diffs = this.getPossibleDiffs(node, x, y);
+            const pixelChildren = [];
             diffs.forEach((diff) => {
+                if (diff <= 1 && diff >= -1) {
+                    // we don't care about these for now.
+                    return;
+                }
                 const newNode = new Node(x, y, diff.diff, node);
                 newNode.h = node.h + diff.deltaH;
-                possibleChildren.push(newNode);
+                pixelChildren.push(newNode);
             });
+
+            // For speed, just choose the top branches.
+            if (pixelChildren.length > (branchingFactor || 3)) {
+                pixelChildren.sort((a, b) => a.h - b.h);
+                pixelChildren.splice(branchingFactor || 3);
+            }
+
+            Array.prototype.push.apply(possibleChildren, pixelChildren);
         }, this.scale);
 
         // If otherClosed is set, then check agains the opposite search nodes

@@ -119,16 +119,30 @@ describe('search', () => {
         expect(diffs.map((diffObj) => diffObj.diff).sort()).toEqual([-3, -2, -1, 0, 1].sort());
     });
 
-    describe('makePossibleNodes', () => {
+    describe('makePossibleChildren', () => {
         it('makes 17 nodes for four pixels', () => {
             const search = new AStarSearch(nums2x2, zeros2x2, 1);
-            const nodes = search.makePossibleChildren(top);
+            const nodes = search.makePossibleChildren(top, 100);
             // 0 options : 0, 1, 2, 3
             // 1 options : 0, 1, 2, 3
             // 2 options : 0, 1, 2, 3
             // 3 options : 0, 1, 2, 3, 4 (because +1)
             // the actual diffs are the number minus the option
             expect(nodes.length).toEqual(17);
+        });
+
+        test.each([1, 2, 3])('chooses the right number of nodes based on branching factor %d', (branchFactor) => {
+            const search = new AStarSearch(nums2x2, zeros2x2, 1);
+            const nodes = search.makePossibleChildren(top, branchFactor);
+            // times 4 because branch factor actually applies to the pixel, not the node.
+            expect(nodes.length).toEqual(branchFactor * 4);
+        });
+
+        it('chooses the best nodes based on branching factor', () => {
+            const search = new AStarSearch(nums2x2, zeros2x2, 1);
+            const firstNode = search.open.getAndRemoveLowest();
+            const nodes = search.makePossibleChildren(firstNode, 1);
+            nodes.forEach((n) => expect(n.h).toBeLessThanOrEqual(firstNode.h));
         });
     });
 
@@ -148,7 +162,7 @@ describe('search', () => {
             const search = new AStarSearch(zeros50x50, hundreds50x50, scale);
             const startingH = search.open.peek().h;
             expect(startingH).toEqual((100 * 50 * 50) / (scale * scale));
-            const children = search.makePossibleChildren(search.open.peek());
+            const children = search.makePossibleChildren(search.open.peek(), 100);
             children.forEach((child) => {
                 // These diffs are all in the correct direction
                 // since they are bounded by 0
@@ -163,7 +177,7 @@ describe('search', () => {
             // Create a node that makes it halfway to 100 at (10, 10)
             // We can accept default h calculation because the diff is in the right way
             const halfwayNode = new Node(10, 10, 50, firstNode);
-            const children = search.makePossibleChildren(halfwayNode);
+            const children = search.makePossibleChildren(halfwayNode, 100);
             const foundDiffs = [false, false, false, false];
             children.forEach((child) => {
                 expect(child.h).toEqual(halfwayNode.h - child.diff);
@@ -183,7 +197,7 @@ describe('search', () => {
 
             // Create a node that makes it to 100 at (10, 10)
             const madeItNode = new Node(pos, pos, 100, firstNode);
-            const children = search.makePossibleChildren(madeItNode);
+            const children = search.makePossibleChildren(madeItNode, 100);
             const foundDiffs = [false, false, false, false];
             children.forEach((child) => {
                 if (child.x === pos && child.y === pos) {
@@ -207,7 +221,7 @@ describe('search', () => {
             // Create a node that is at 75 at (11, 10) and 125 at (10, 10)
             const node75 = new Node(pos + 1, pos, 75, firstNode);
             const node125 = new Node(pos, pos, 125, node75);
-            const children = search.makePossibleChildren(node125);
+            const children = search.makePossibleChildren(node125, 100);
             const foundDiffs = [false, false, false, false, -125];
             children.forEach((child) => {
                 if (child.x === pos && child.y === pos) {
