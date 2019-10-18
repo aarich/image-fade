@@ -5,7 +5,7 @@ import executeCallback from './astar/utils.js';
 /** @module BidirectionalAStarTransitioner */
 export default class BidirectionalAStarTransitioner extends Transitioner {
     run(callback) {
-        this.scale = 5;
+        this.scale = 10;
 
         this.input.convertToGrayScale();
         this.output.convertToGrayScale();
@@ -21,24 +21,33 @@ export default class BidirectionalAStarTransitioner extends Transitioner {
     }
 
     _runOnce() {
-        const numTimes = 1;
+        for (let counter = 0; counter < 50; counter++) {
+            const numTimes = 1;
 
-        let winning = this.search1.run(this.callback, numTimes, false);
-        if (winning) {
-            executeCallback(BidirectionalAStarTransitioner.makePath(winning, 1),
-                this.callback, this.input, this.scale);
-            return;
+            let winning = this.search1.run(this.callback, numTimes, false);
+            if (winning) {
+                executeCallback(BidirectionalAStarTransitioner.makePath(winning, 1),
+                    this.callback, this.input, this.scale);
+                return;
+            }
+
+            winning = this.search2.run(this.callback, numTimes, false);
+
+            if (winning) {
+                executeCallback(BidirectionalAStarTransitioner.makePath(winning, 2),
+                    this.callback, this.input, this.scale);
+                return;
+            }
         }
 
-        winning = this.search2.run(this.callback, numTimes, false);
+        // eslint-disable-next-line no-console
+        console.table(this.search1.stats);
+        // eslint-disable-next-line no-console
+        console.table(this.search2.stats);
 
-        if (winning) {
-            executeCallback(BidirectionalAStarTransitioner.makePath(winning, 2),
-                this.callback, this.input, this.scale);
-            return;
-        }
-
-        this._runOnce();
+        setTimeout(() => {
+            this._runOnce();
+        }, 1);
     }
 
     static makePath(winningNodes, direction) {
