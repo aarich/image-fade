@@ -3,7 +3,7 @@ import {
     zeros50x50,
     hundreds50x50,
     ASI,
-    singlePixelImage
+    singlePixelImage,
 } from '../utilities.js';
 
 const top = new Node(0, 0, 0, null);
