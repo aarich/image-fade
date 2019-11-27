@@ -1,5 +1,10 @@
 import Node from '../../transitioners/astar/node.js';
-import { zeros50x50, hundreds50x50, ASI, singlePixelImage } from '../utilities.js';
+import {
+    zeros50x50,
+    hundreds50x50,
+    ASI,
+    singlePixelImage
+} from '../utilities.js';
 
 const top = new Node(0, 0, 0, null);
 

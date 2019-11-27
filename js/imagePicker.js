@@ -1,6 +1,7 @@
 import MyImage from './image.js';
 
 /** @module ImagePicker */
+/* eslint-env browser */
 export default class ImagePicker extends HTMLElement {
     constructor() {
         super();
