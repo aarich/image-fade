@@ -26,4 +26,5 @@ module.exports = {
   env: {
     jest: true
   },
+  ignorePatterns: [ 'js/vendor/' ],
 };
