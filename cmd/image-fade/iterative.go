@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-const (
-	maxIterations = 20
-)
-
 func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
 	defer timeTrack(time.Now(), "iterative transitioner")
 
@@ -23,10 +19,10 @@ func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
 
 	fmt.Println()
 
-	for i := 0; i < maxIterations; i++ {
-		nextFrame = getNextImage(nextFrame, out)
+	for i := 0; i < numIterations; i++ {
+		nextFrame, _ = getNextImage(nextFrame, out)
 		images = append(images, nextFrame)
-		printStatus(i+1, maxIterations)
+		printStatus(i+1, numIterations)
 	}
 
 	images = append(images, out)
@@ -36,20 +32,29 @@ func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
 	return images
 }
 
-func getNextImage(in *image.Gray, out *image.Gray) *image.Gray {
+func getNextImage(in *image.Gray, out *image.Gray) (*image.Gray, int) {
 	current := copyGray(in)
-
+	numChanged := 0
 	forEachPixel(in.Bounds(), func(x int, y int) {
-		nextValue := getNextPixel(x, y, in, out)
-		current.SetGray(x, y, color.Gray{uint8(nextValue)})
+		nextValue, didChange := getNextPixel(x, y, in, out)
+		if didChange {
+			current.SetGray(x, y, color.Gray{uint8(nextValue)})
+			numChanged++
+		}
 	})
 
-	return current
+	return current, numChanged
 }
 
-func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int) {
+func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int, didChange bool) {
 	current := int(in.GrayAt(x, y).Y)
 	desired := int(out.GrayAt(x, y).Y)
+
+	didChange = false
+
+	if current == desired {
+		return current, didChange
+	}
 
 	diff := desired - current
 	if diff > 0 {
@@ -58,15 +63,13 @@ func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int) {
 		next = current + 1
 	}
 
-	var opt1, opt2, opt3, opt4 int
-
 	if x > 0 {
 		option := int(in.GrayAt(x-1, y).Y)
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
+			didChange = true
 		}
-		opt1 = option
 	}
 
 	if x < (in.Bounds().Dx() - 1) {
@@ -74,8 +77,8 @@ func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int) {
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
+			didChange = true
 		}
-		opt2 = option
 	}
 
 	if y > 0 {
@@ -83,21 +86,18 @@ func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int) {
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
+			didChange = true
 		}
-		opt3 = option
 	}
 
 	if y < (in.Bounds().Dy() - 1) {
 		option := int(in.GrayAt(x, y-1).Y)
 		if isBetterOption(option, desired, diff) {
 			next = option
+			didChange = true
 		}
-		opt4 = option
 	}
 
-	if x < -1 {
-		fmt.Printf("[%d, %d] %d (%d, %d, %d, %d) -> %d\n", x, y, current, opt1, opt2, opt3, opt4, next)
-	}
 	return
 }
 

@@ -1,60 +1,86 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"image"
 	"os"
+	"strconv"
 )
 
 const (
-	paramIn  = 1
-	paramOut = 2
+	paramChoice     = 1
+	paramIn         = 2
+	paramOut        = 3
+	paramIterations = 4
+	paramGifName    = 5
 )
 
+var numIterations int
+
 func main() {
-	fmt.Println()
+	if len(os.Args) < 5 || len(os.Args) > 6 {
+		printUsage()
+		return
+	}
+
+	choice := os.Args[paramChoice]
 	inFile := os.Args[paramIn]
 	outFile := os.Args[paramOut]
+	numIterations, _ = strconv.Atoi(os.Args[paramIterations])
+	outGif := "fade.gif"
+
+	if len(os.Args) == 6 {
+		outGif = os.Args[paramGifName]
+	}
 
 	inImage := loadGrayscale(inFile)
 	outImage := loadGrayscale(outFile)
-
-	fn := getChoice()
-	images := fn(inImage, outImage)
-
-	makeGif("out.gif", images)
-}
-
-type transitioner func(in *image.Gray, out *image.Gray) []*image.Gray
-
-func getChoice() transitioner {
-	types := [1]string{"1) iterative"}
-
-	if len(types) == 1 {
-		return iterative
-	}
-
-	fmt.Println("Available types")
-
-	for _, str := range types {
-		fmt.Println(str)
-	}
-	fmt.Printf("\nEnter choice: ")
-
-	reader := bufio.NewReader(os.Stdin)
-	char, _, err := reader.ReadRune()
-
+	t, err := getChoice(choice)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return
 	}
 
-	switch char {
-	case '1':
-		return iterative
-	default:
-		fmt.Println("Unknown choice:", string(char))
-		return nil
+	images := t.fn(inImage, outImage)
+
+	makeGif(outGif, images)
+}
+
+func availableTransitioners() []transitioner {
+	return []transitioner{
+		transitioner{iterative, "iterative"},
+		transitioner{biIterative, "bidirectional iterative"},
 	}
+}
+
+type transitioner struct {
+	fn      func(in *image.Gray, out *image.Gray) []*image.Gray
+	display string
+}
+
+func printUsage() {
+	fmt.Println("\nUsage:")
+	fmt.Printf("\t%s %s %s %s %s %s\n\n", os.Args[0], "transitioner", "inputImage", "outputImage", "iterations", "[outputGif]")
+
+	fmt.Println("transitioner - specify number below:")
+
+	for i, t := range availableTransitioners() {
+		fmt.Printf("\t%d) %s\n", i+1, t.display)
+	}
+
+	fmt.Println()
+	fmt.Println("inputImage - location from current directory of input image (jpg)")
+	fmt.Println("outputImage - location from current directory of output image (jpg)")
+	fmt.Println("outputGif - name/location of output gif. If not specified, \"fade.gif\" is used.")
+	fmt.Println()
+}
+
+func getChoice(choice string) (ret transitioner, err error) {
+	available := availableTransitioners()
+	i, err := strconv.Atoi(choice)
+	if err != nil {
+		return
+	}
+	ret = available[i-1]
+	return
 }

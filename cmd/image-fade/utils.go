@@ -44,7 +44,7 @@ func makeGif(filename string, images []*image.Gray) {
 		outGif.Image = append(outGif.Image, paletted)
 		outGif.Delay = append(outGif.Delay, 5)
 
-		printStatus(i, len(images))
+		printStatus(i+1, len(images))
 	}
 
 	fmt.Println("\r")
@@ -56,14 +56,21 @@ func makeGif(filename string, images []*image.Gray) {
 }
 
 func printStatus(cur int, total int) {
-	fmt.Printf("\r")
-	for i := 0; i < total; i++ {
-		if i < cur {
-			fmt.Printf("+")
+	fmt.Printf("\r[")
+
+	scaledTotal, scaledCur := total, cur
+	if total > 100 {
+		scaledTotal = 100
+		scaledCur = int(float32(cur) / float32(total) * 100.0)
+	}
+	for i := 0; i < scaledTotal; i++ {
+		if i < scaledCur {
+			fmt.Printf("#")
 		} else {
-			fmt.Printf("-")
+			fmt.Printf("=")
 		}
 	}
+	fmt.Printf("] (%d/%d)", cur, total)
 }
 
 func timeTrack(start time.Time, name string) {
@@ -92,4 +99,10 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+func reverseSlice(arr []*image.Gray) {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
+		arr[i], arr[j] = arr[j], arr[i]
+	}
 }
