@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	MaxIterations = 20
+	maxIterations = 20
 )
 
 func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
@@ -23,10 +23,10 @@ func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
 
 	fmt.Println()
 
-	for i := 0; i < MaxIterations; i++ {
+	for i := 0; i < maxIterations; i++ {
 		nextFrame = getNextImage(nextFrame, out)
 		images = append(images, nextFrame)
-		printStatus(i+1, MaxIterations)
+		printStatus(i+1, maxIterations)
 	}
 
 	images = append(images, out)

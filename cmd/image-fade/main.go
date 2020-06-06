@@ -8,14 +8,14 @@ import (
 )
 
 const (
-	ParamIn  = 1
-	ParamOut = 2
+	paramIn  = 1
+	paramOut = 2
 )
 
 func main() {
 	fmt.Println()
-	inFile := os.Args[ParamIn]
-	outFile := os.Args[ParamOut]
+	inFile := os.Args[paramIn]
+	outFile := os.Args[paramOut]
 
 	inImage := loadGrayscale(inFile)
 	outImage := loadGrayscale(outFile)
