@@ -1,0 +1,6 @@
+{
+    "input":"images/t1.jpg",
+    "output":"images/t2.jpg",
+    "gif": "fade.gif",
+    "iterations":20
+}

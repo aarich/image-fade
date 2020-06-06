@@ -1,40 +1,37 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"image"
+	"io/ioutil"
 	"os"
 	"strconv"
 )
 
 const (
-	paramChoice     = 1
-	paramIn         = 2
-	paramOut        = 3
-	paramIterations = 4
-	paramGifName    = 5
+	paramChoice  = 1
+	configInput  = "input"
+	configOutput = "output"
 )
 
 var numIterations int
 
 func main() {
-	if len(os.Args) < 5 || len(os.Args) > 6 {
+	if len(os.Args) != 2 {
 		printUsage()
 		return
 	}
 
 	choice := os.Args[paramChoice]
-	inFile := os.Args[paramIn]
-	outFile := os.Args[paramOut]
-	numIterations, _ = strconv.Atoi(os.Args[paramIterations])
-	outGif := "fade.gif"
 
-	if len(os.Args) == 6 {
-		outGif = os.Args[paramGifName]
-	}
+	config := getConfig()
+	fmt.Printf("Input Configuration (goConfig.json):\n %+v\n\n", config)
 
-	inImage := loadGrayscale(inFile)
-	outImage := loadGrayscale(outFile)
+	inImage := loadGrayscale(config.Input)
+	outImage := loadGrayscale(config.Output)
+	numIterations = config.Iterations
+
 	t, err := getChoice(choice)
 	if err != nil {
 		fmt.Println(err)
@@ -43,7 +40,7 @@ func main() {
 
 	images := t.fn(inImage, outImage)
 
-	makeGif(outGif, images)
+	makeGif(config.Gif, images)
 }
 
 func availableTransitioners() []transitioner {
@@ -60,18 +57,16 @@ type transitioner struct {
 
 func printUsage() {
 	fmt.Println("\nUsage:")
-	fmt.Printf("\t%s %s %s %s %s %s\n\n", os.Args[0], "transitioner", "inputImage", "outputImage", "iterations", "[outputGif]")
+	fmt.Printf("\t%s %s\n\n", os.Args[0], "t")
 
-	fmt.Println("transitioner - specify number below:")
+	fmt.Println("(t)ransitioner - specify number below:")
 
 	for i, t := range availableTransitioners() {
 		fmt.Printf("\t%d) %s\n", i+1, t.display)
 	}
 
 	fmt.Println()
-	fmt.Println("inputImage - location from current directory of input image (jpg)")
-	fmt.Println("outputImage - location from current directory of output image (jpg)")
-	fmt.Println("outputGif - name/location of output gif. If not specified, \"fade.gif\" is used.")
+	fmt.Println("Configuration specified in config.json")
 	fmt.Println()
 }
 
@@ -83,4 +78,24 @@ func getChoice(choice string) (ret transitioner, err error) {
 	}
 	ret = available[i-1]
 	return
+}
+
+func getConfig() (result config) {
+	file, err := os.Open("goConfig.json")
+	defer file.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	bytes, _ := ioutil.ReadAll(file)
+	json.Unmarshal(bytes, &result)
+	return
+}
+
+type config struct {
+	Input      string `json:"input"`
+	Output     string `json:"output"`
+	Gif        string `json:"gif"`
+	Iterations int    `json:"iterations"`
 }
