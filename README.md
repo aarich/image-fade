@@ -2,11 +2,14 @@
 
 A tool for creating *neat-o* transitions between images
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/aarich/image-fade)](https://goreportcard.com/report/github.com/aarich/image-fade)
+
+
 ## Sample
 
 | Input     | Output  |
 | ---       | --- |
-| ![Input](/images/t1.jpg) | ![Output](/images/t2.jpg) | 
+| ![Input](/images/t1.jpg) | ![Output](/images/t2.jpg) |
 
 ### Resulting Fades
 
