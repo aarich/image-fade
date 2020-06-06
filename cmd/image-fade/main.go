@@ -48,8 +48,8 @@ func main() {
 
 func availableTransitioners() []transitioner {
 	return []transitioner{
-		transitioner{iterative, "iterative"},
-		transitioner{biIterative, "bidirectional iterative"},
+		{iterative, "iterative"},
+		{biIterative, "bidirectional iterative"},
 	}
 }
 
