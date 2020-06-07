@@ -38,7 +38,7 @@ export default class NodeSet {
         for (const nodeList of this.nodes.values()) {
             const found = nodeList.find(fn);
             if (found) {
-                return found
+                return found;
             }
         }
         return null;
