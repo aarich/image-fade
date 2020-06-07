@@ -43,7 +43,7 @@ func main() {
 
 func availableTransitioners() []transitioner {
 	return []transitioner{
-		{iterative, "Iterative"},
+		{Iterative, "Iterative"},
 		{biIterative, "Bidirectional Iterative"},
 		{astar, "A*"},
 	}

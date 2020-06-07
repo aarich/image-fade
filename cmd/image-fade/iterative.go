@@ -7,7 +7,12 @@ import (
 	"time"
 )
 
-func iterative(in, out *image.Gray) []*image.Gray {
+// Generates an iterative transition, returning an array of images representing
+// the fade.
+// The iterative algorithm generates the next image in the transition pixel by
+// pixel by choosing either a fade (+/- 1) or a neighboring pixel (giving the
+// effect of elements of the image sliding around)
+func Iterative(in, out *image.Gray) []*image.Gray {
 	defer timeTrack(time.Now(), "iterative transitioner")
 
 	fmt.Println("Running iterative")
