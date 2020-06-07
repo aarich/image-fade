@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
+func iterative(in, out *image.Gray) []*image.Gray {
 	defer timeTrack(time.Now(), "iterative transitioner")
 
 	fmt.Println("Running iterative")
@@ -32,7 +32,7 @@ func iterative(in *image.Gray, out *image.Gray) []*image.Gray {
 	return images
 }
 
-func getNextImage(in *image.Gray, out *image.Gray) (*image.Gray, int) {
+func getNextImage(in, out *image.Gray) (*image.Gray, int) {
 	current := copyGray(in)
 	numChanged := 0
 	forEachPixel(in.Bounds(), func(x int, y int) {
@@ -46,7 +46,7 @@ func getNextImage(in *image.Gray, out *image.Gray) (*image.Gray, int) {
 	return current, numChanged
 }
 
-func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int, didChange bool) {
+func getNextPixel(x, y int, in, out *image.Gray) (next int, didChange bool) {
 	current := int(in.GrayAt(x, y).Y)
 	desired := int(out.GrayAt(x, y).Y)
 
@@ -101,6 +101,6 @@ func getNextPixel(x int, y int, in *image.Gray, out *image.Gray) (next int, didC
 	return
 }
 
-func isBetterOption(p int, desired int, diff int) bool {
+func isBetterOption(p, desired, diff int) bool {
 	return abs(desired-p) <= abs(diff)
 }

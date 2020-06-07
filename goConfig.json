@@ -1,6 +1,6 @@
 {
-    "input":"images/t1.jpg",
-    "output":"images/t2.jpg",
+    "input":"images/lowRes/t1.jpg",
+    "output":"images/lowRes/t3.jpg",
     "gif": "fade.gif",
     "iterations":20
 }

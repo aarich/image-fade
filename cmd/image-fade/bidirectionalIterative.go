@@ -10,7 +10,7 @@ const (
 	minChangePercentage = 0.15
 )
 
-func biIterative(in *image.Gray, out *image.Gray) []*image.Gray {
+func biIterative(in, out *image.Gray) []*image.Gray {
 	defer timeTrack(time.Now(), "bidirectional iterative transitioner")
 
 	fmt.Println("Running bidirectional iterative")

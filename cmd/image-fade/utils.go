@@ -55,7 +55,7 @@ func makeGif(filename string, images []*image.Gray) {
 	gif.EncodeAll(f, outGif)
 }
 
-func printStatus(cur int, total int) {
+func printStatus(cur, total int) {
 	fmt.Printf("\r[")
 
 	scaledTotal, scaledCur := total, cur
@@ -78,14 +78,36 @@ func timeTrack(start time.Time, name string) {
 }
 
 type pixelIterator func(int, int)
+type pixelAccumulator func(int, int, int) int
 
 func forEachPixel(bounds image.Rectangle, fn pixelIterator) {
-
 	for x := 0; x < bounds.Dx(); x++ {
 		for y := 0; y < bounds.Dy(); y++ {
 			fn(x, y)
 		}
 	}
+}
+
+func forEachPixelScaled(bounds image.Rectangle, fn pixelIterator, scale int) {
+	for x := 0; x < bounds.Dx(); x++ {
+		for y := 0; y < bounds.Dy(); y++ {
+			if x%scale == 0 && y%scale == 0 {
+				fn(x, y)
+			}
+		}
+	}
+}
+
+func iterate(bounds image.Rectangle, fn pixelAccumulator, scale, acc int) (result int) {
+	result = acc
+	for x := 0; x < bounds.Dx(); x++ {
+		for y := 0; y < bounds.Dy(); y++ {
+			if x%scale == 0 && y%scale == 0 {
+				result = fn(x, y, result)
+			}
+		}
+	}
+	return
 }
 
 func copyGray(in *image.Gray) *image.Gray {
@@ -105,4 +127,8 @@ func reverseSlice(arr []*image.Gray) {
 	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
+}
+
+func log(message string, a ...interface{}) {
+	fmt.Printf(message+"\n", a...)
 }

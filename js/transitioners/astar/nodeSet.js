@@ -36,7 +36,10 @@ export default class NodeSet {
     find(fn) {
         // eslint-disable-next-line no-restricted-syntax
         for (const nodeList of this.nodes.values()) {
-            return nodeList.find(fn);
+            const found = nodeList.find(fn);
+            if (found) {
+                return found
+            }
         }
         return null;
     }

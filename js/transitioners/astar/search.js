@@ -98,7 +98,7 @@ export default class AStarSearch {
         }
         possibleChildren.forEach((successor) => {
             if (!this.shouldSkip(successor)) {
-                this.open.add(successor, successor.f);
+                this.open.add(successor);
             }
         });
         return null;
@@ -200,6 +200,7 @@ export default class AStarSearch {
     getPossibleDiffs(parent, x, y) {
         const currentPixel = parent.getPixelValue(x, y, this.input);
         const desiredPixel = this.output.get(x, y);
+        const currentDiff = desiredPixel - currentPixel;
 
         const posX = AStarSearch.getPossibleValues(x, 0, this.input.width - 1);
         const posY = AStarSearch.getPossibleValues(y, 0, this.input.height - 1);
@@ -208,7 +209,6 @@ export default class AStarSearch {
 
         const addIfNeeded = (diff) => {
             if (!diffs.find((d) => d.diff === diff)) {
-                const currentDiff = desiredPixel - currentPixel;
                 const newDiff = desiredPixel - (currentPixel + diff);
                 const deltaH = Math.abs(newDiff) - Math.abs(currentDiff);
 

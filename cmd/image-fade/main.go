@@ -10,9 +10,7 @@ import (
 )
 
 const (
-	paramChoice  = 1
-	configInput  = "input"
-	configOutput = "output"
+	paramChoice = 1
 )
 
 var numIterations int
@@ -45,13 +43,14 @@ func main() {
 
 func availableTransitioners() []transitioner {
 	return []transitioner{
-		{iterative, "iterative"},
-		{biIterative, "bidirectional iterative"},
+		{iterative, "Iterative"},
+		{biIterative, "Bidirectional Iterative"},
+		{astar, "A*"},
 	}
 }
 
 type transitioner struct {
-	fn      func(in *image.Gray, out *image.Gray) []*image.Gray
+	fn      func(in, out *image.Gray) []*image.Gray
 	display string
 }
 
