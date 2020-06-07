@@ -2,10 +2,11 @@
 
 A tool for creating *neat-o* transitions between images
 
-[![License](https://img.shields.io/github/license/aarich/image-fade)](https://github.com/aarich/image-fade/blob/master/LICENSE)
-[![Actions Status](https://github.com/aarich/image-fade/workflows/eslint/badge.svg)](https://github.com/aarich/image-fade/actions)
+[![eslint status](https://github.com/aarich/image-fade/workflows/eslint/badge.svg)](https://github.com/aarich/image-fade/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/aarich/image-fade)](https://goreportcard.com/report/github.com/aarich/image-fade)
 [![GoDoc](https://godoc.org/github.com/aarich/image-fade/cmd/image-fade?status.svg)](https://godoc.org/github.com/aarich/image-fade/cmd/image-fade)
+![GitHub last commit](https://img.shields.io/github/last-commit/aarich/image-fade)
+[![License](https://img.shields.io/github/license/aarich/image-fade)](https://github.com/aarich/image-fade/blob/master/LICENSE)
 
 ## Sample
 
