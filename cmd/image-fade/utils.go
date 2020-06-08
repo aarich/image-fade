@@ -1,11 +1,9 @@
-package main
+package fade
 
 import (
 	"fmt"
 	"image"
-	"image/color/palette"
 	"image/draw"
-	"image/gif"
 	"image/jpeg"
 	"os"
 	"time"
@@ -13,7 +11,11 @@ import (
 	"github.com/harrydb/go/img/grayscale"
 )
 
-func loadGrayscale(filename string) *image.Gray {
+type Config struct {
+	NumIterations int
+}
+
+func LoadGrayscale(filename string) *image.Gray {
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err.Error())
@@ -31,31 +33,7 @@ func loadGrayscale(filename string) *image.Gray {
 	return gray
 }
 
-func makeGif(filename string, images []*image.Gray) {
-	defer timeTrack(time.Now(), "making gif")
-	fmt.Println("Making Gif")
-
-	outGif := &gif.GIF{}
-
-	fmt.Println()
-	for i, frame := range images {
-		paletted := image.NewPaletted(frame.Bounds(), palette.Plan9)
-		draw.Draw(paletted, paletted.Rect, frame, frame.Bounds().Min, draw.Over)
-		outGif.Image = append(outGif.Image, paletted)
-		outGif.Delay = append(outGif.Delay, 5)
-
-		printStatus(i+1, len(images))
-	}
-
-	fmt.Println("\r")
-
-	// save to out.gif
-	f, _ := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
-	defer f.Close()
-	gif.EncodeAll(f, outGif)
-}
-
-func printStatus(cur, total int) {
+func PrintStatus(cur, total int) {
 	fmt.Printf("\r[")
 
 	scaledTotal, scaledCur := total, cur

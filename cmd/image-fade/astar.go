@@ -1,4 +1,4 @@
-package main
+package fade
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ const (
 	branchingFactor = 3
 )
 
-func astar(in, out *image.Gray) []*image.Gray {
+func AStar(in, out *image.Gray, c Config) []*image.Gray {
 	searcher := newAStarSearch(in, out, 1)
 	return searcher.run(1)
 }

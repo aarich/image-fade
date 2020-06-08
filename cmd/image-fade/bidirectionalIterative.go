@@ -1,4 +1,4 @@
-package main
+package fade
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ const (
 	minChangePercentage = 0.15
 )
 
-func biIterative(in, out *image.Gray) []*image.Gray {
+func BiIterative(in, out *image.Gray, config Config) []*image.Gray {
 	defer timeTrack(time.Now(), "bidirectional iterative transitioner")
 
 	fmt.Println("Running bidirectional iterative")
@@ -28,7 +28,7 @@ func biIterative(in, out *image.Gray) []*image.Gray {
 	var numChanges int
 	fmt.Println()
 
-	for i := 0; i < numIterations; i++ {
+	for i := 0; i < config.NumIterations; i++ {
 		nextFrameForward, numChanges = getNextImage(nextFrameForward, nextFrameBackward)
 		forwardImages = append(forwardImages, nextFrameForward)
 		if numChanges < minChanged {
@@ -41,7 +41,7 @@ func biIterative(in, out *image.Gray) []*image.Gray {
 			break
 		}
 
-		printStatus(i+1, numIterations)
+		PrintStatus(i+1, config.NumIterations)
 	}
 
 	reverseSlice(backwardImages)

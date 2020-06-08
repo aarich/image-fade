@@ -4,9 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
+	"image/color/palette"
+	"image/draw"
+	"image/gif"
 	"io/ioutil"
 	"os"
 	"strconv"
+	"time"
+
+	fade "github.com/aarich/image-fade/cmd/image-fade"
 )
 
 const (
@@ -26,8 +32,8 @@ func main() {
 	config := getConfig()
 	fmt.Printf("Input Configuration (goConfig.json):\n %+v\n\n", config)
 
-	inImage := loadGrayscale(config.Input)
-	outImage := loadGrayscale(config.Output)
+	inImage := fade.LoadGrayscale(config.Input)
+	outImage := fade.LoadGrayscale(config.Output)
 	numIterations = config.Iterations
 
 	t, err := getChoice(choice)
@@ -36,21 +42,49 @@ func main() {
 		return
 	}
 
-	images := t.fn(inImage, outImage)
+	images := t.fn(inImage, outImage, fade.Config{NumIterations: numIterations})
 
 	makeGif(config.Gif, images)
 }
 
+func timeTrack(start time.Time, name string) {
+	fmt.Printf("%s took %s\n", name, time.Since(start))
+}
+
+func makeGif(filename string, images []*image.Gray) {
+	defer timeTrack(time.Now(), "making gif")
+	fmt.Println("Making Gif")
+
+	outGif := &gif.GIF{}
+
+	fmt.Println()
+	for i, frame := range images {
+		paletted := image.NewPaletted(frame.Bounds(), palette.Plan9)
+		draw.Draw(paletted, paletted.Rect, frame, frame.Bounds().Min, draw.Over)
+		outGif.Image = append(outGif.Image, paletted)
+		outGif.Delay = append(outGif.Delay, 5)
+
+		fade.PrintStatus(i+1, len(images))
+	}
+
+	fmt.Println("\r")
+
+	// save to out.gif
+	f, _ := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
+	defer f.Close()
+	gif.EncodeAll(f, outGif)
+}
+
 func availableTransitioners() []transitioner {
 	return []transitioner{
-		{Iterative, "Iterative"},
-		{biIterative, "Bidirectional Iterative"},
-		{astar, "A*"},
+		{fade.Iterative, "Iterative"},
+		{fade.BiIterative, "Bidirectional Iterative"},
+		{fade.AStar, "A*"},
 	}
 }
 
 type transitioner struct {
-	fn      func(in, out *image.Gray) []*image.Gray
+	fn      func(in, out *image.Gray, config fade.Config) []*image.Gray
 	display string
 }
 

@@ -1,4 +1,4 @@
-package main
+package fade
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 // The iterative algorithm generates the next image in the transition pixel by
 // pixel by choosing either a fade (+/- 1) or a neighboring pixel (giving the
 // effect of elements of the image sliding around)
-func Iterative(in, out *image.Gray) []*image.Gray {
+func Iterative(in, out *image.Gray, config Config) []*image.Gray {
 	defer timeTrack(time.Now(), "iterative transitioner")
 
 	fmt.Println("Running iterative")
@@ -24,10 +24,10 @@ func Iterative(in, out *image.Gray) []*image.Gray {
 
 	fmt.Println()
 
-	for i := 0; i < numIterations; i++ {
+	for i := 0; i < config.NumIterations; i++ {
 		nextFrame, _ = getNextImage(nextFrame, out)
 		images = append(images, nextFrame)
-		printStatus(i+1, numIterations)
+		PrintStatus(i+1, config.NumIterations)
 	}
 
 	images = append(images, out)
