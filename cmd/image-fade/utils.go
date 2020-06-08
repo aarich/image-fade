@@ -11,10 +11,16 @@ import (
 	"github.com/harrydb/go/img/grayscale"
 )
 
+// Config holds generic configuration info for the iterators
 type Config struct {
+	// How many times to run. For iterative this may cause the transitioner
+	// to not fully fade. For A* this will affect frequency of log output
 	NumIterations int
+	Scale         int // Some algorithms use this to speed up. Smaller numbers indicate finer granularity
 }
 
+// LoadGrayscale is a utility function to load an image by filename then use
+// the grayscale package to convert to gray using ToGrayLuminance
 func LoadGrayscale(filename string) *image.Gray {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -33,6 +39,8 @@ func LoadGrayscale(filename string) *image.Gray {
 	return gray
 }
 
+// PrintStatus print the status of a job as a progress bar.
+// It begins with \r so will clear any content previously written
 func PrintStatus(cur, total int) {
 	fmt.Printf("\r[")
 

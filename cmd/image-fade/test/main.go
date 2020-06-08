@@ -42,7 +42,7 @@ func main() {
 		return
 	}
 
-	images := t.fn(inImage, outImage, fade.Config{NumIterations: numIterations})
+	images := t.fn(inImage, outImage, fade.Config{NumIterations: numIterations, Scale: 1})
 
 	makeGif(config.Gif, images)
 }

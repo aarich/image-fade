@@ -10,8 +10,10 @@ const (
 	branchingFactor = 3
 )
 
+// AStar uses the A* search algorithm to find the optimal fading path. Currently
+// it is preventatively slow
 func AStar(in, out *image.Gray, c Config) []*image.Gray {
-	searcher := newAStarSearch(in, out, 1)
+	searcher := newAStarSearch(in, out, c.Scale)
 	return searcher.run(1)
 }
 

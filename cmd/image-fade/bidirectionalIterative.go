@@ -10,6 +10,8 @@ const (
 	minChangePercentage = 0.15
 )
 
+// BiIterative is similar to the iterative algorithm, however this one works
+// from both the beginning and ending image to meet in the middle
 func BiIterative(in, out *image.Gray, config Config) []*image.Gray {
 	defer timeTrack(time.Now(), "bidirectional iterative transitioner")
 
