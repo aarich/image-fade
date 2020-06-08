@@ -43,7 +43,7 @@ func BiIterative(in, out *image.Gray, config Config) []*image.Gray {
 			break
 		}
 
-		PrintStatus(i+1, config.NumIterations)
+		printStatus(i+1, config.NumIterations)
 	}
 
 	reverseSlice(backwardImages)

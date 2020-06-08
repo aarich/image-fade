@@ -27,7 +27,7 @@ func Iterative(in, out *image.Gray, config Config) []*image.Gray {
 	for i := 0; i < config.NumIterations; i++ {
 		nextFrame, _ = getNextImage(nextFrame, out)
 		images = append(images, nextFrame)
-		PrintStatus(i+1, config.NumIterations)
+		printStatus(i+1, config.NumIterations)
 	}
 
 	images = append(images, out)
