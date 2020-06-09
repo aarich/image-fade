@@ -63,8 +63,17 @@ func MakeAvi(filename string, images []*image.Gray, fps int32) {
 
 	for i, frame := range images {
 		buf := new(bytes.Buffer)
-		jpeg.Encode(buf, frame, nil)
-		aw.AddFrame(buf.Bytes())
+		err = jpeg.Encode(buf, frame, nil)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		err = aw.AddFrame(buf.Bytes())
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		printStatus(i+1, len(images))
 	}

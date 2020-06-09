@@ -108,18 +108,6 @@ func (s *nodeSet) has(n *node) bool {
 	return false
 }
 
-type findFn func([]*node) (*node, bool)
-
-func (s *nodeSet) find(fn findFn) (n *node, ok bool) {
-	for _, nodes := range s.nodes {
-		if n, ok = fn(nodes); ok {
-			return n, ok
-		}
-	}
-
-	return n, false
-}
-
 // Priority queue implemented with a min heap and trree
 type priorityQueue struct {
 	arr []*node
@@ -171,11 +159,6 @@ func (pq *priorityQueue) getAndRemoveLowest() (n *node) {
 // The length of the open list
 func (pq *priorityQueue) len() int {
 	return len(pq.arr)
-}
-
-// Length of the closed list
-func (pq *priorityQueue) closedLen() int {
-	return pq.set.size - pq.len()
 }
 
 func (pq *priorityQueue) bubbleDown(index int) {

@@ -22,6 +22,7 @@ type searchStats struct {
 	currentOpenLength int
 	nextGValue        int
 	nextHValue        int
+	nextFValue        int
 }
 
 func (s searchStats) print() {
@@ -49,7 +50,7 @@ func newAStarSearch(input, output *image.Gray, scale int) aStarSearch {
 		copyGray(input),
 		output,
 		scale,
-		searchStats{0, 0, 0, 0},
+		searchStats{0, 0, 0, 0, 0},
 		open,
 		newNodeSet(),
 	}
@@ -86,13 +87,13 @@ func (a *aStarSearch) run(numTimes int) []*image.Gray {
 			if next != nil {
 				a.stats.nextGValue = next.g
 				a.stats.nextHValue = next.h
+				a.stats.nextFValue = next.f()
 			}
 
 			a.stats.print()
 			counter = 0
 		}
 	}
-	return nil
 }
 
 func (a *aStarSearch) makePath(n *node) []*image.Gray {

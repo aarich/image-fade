@@ -89,11 +89,11 @@ func getChoice(choice string) (ret transitioner, err error) {
 
 func getConfig() (result config) {
 	file, err := os.Open("goConfig.json")
-	defer file.Close()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer file.Close()
 
 	bytes, _ := ioutil.ReadAll(file)
 	err = json.Unmarshal(bytes, &result)
