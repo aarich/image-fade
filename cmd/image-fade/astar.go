@@ -26,7 +26,6 @@ type searchStats struct {
 
 func (s searchStats) print() {
 	fmt.Printf("\r%+v\n", s)
-	return
 }
 
 type aStarSearch struct {
@@ -67,7 +66,7 @@ func initialH(in, out *image.Gray, scale int) int {
 func (a *aStarSearch) run(numTimes int) []*image.Gray {
 	// main loop
 	counter := 0
-	for true {
+	for {
 		fmt.Printf("open length: %d\n", a.open.len())
 		if a.open.len() > 0 {
 			q := a.open.getAndRemoveLowest()

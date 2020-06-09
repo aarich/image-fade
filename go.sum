@@ -1,2 +1,4 @@
 github.com/harrydb/go v0.0.0-20160105214235-0ff7a05d1aa4 h1:xA5LbbQswqRlBNmfJ6Sz0iWee4QVmubayPVhaTONQ8g=
 github.com/harrydb/go v0.0.0-20160105214235-0ff7a05d1aa4/go.mod h1:X81WOeMfDDW5vjsPICoMhc7HC8H49bMg4hy6zZNTwBs=
+github.com/icza/mjpeg v0.0.0-20170217094447-85dfbe473743 h1:u5kZEGcjrCRAS99gyW/wptM3KjGYkVv80WKexNvxBuA=
+github.com/icza/mjpeg v0.0.0-20170217094447-85dfbe473743/go.mod h1:Eja3x31oRrEOzl6ihhsxY23gXaTYWLP3Gwj5nMAJ7m0=

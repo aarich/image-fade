@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
-	"time"
 
 	fade "github.com/aarich/image-fade/cmd/image-fade"
 )
@@ -41,11 +40,13 @@ func main() {
 
 	images := t.fn(inImage, outImage, fade.Config{NumIterations: numIterations, Scale: 1})
 
-	fade.MakeGif(config.Gif, images)
-}
+	if config.Gif != "" {
+		fade.MakeGif(config.Gif, images)
+	}
 
-func timeTrack(start time.Time, name string) {
-	fmt.Printf("%s took %s\n", name, time.Since(start))
+	if config.Avi != "" {
+		fade.MakeAvi(config.Avi, images, 5)
+	}
 }
 
 func availableTransitioners() []transitioner {
@@ -95,7 +96,10 @@ func getConfig() (result config) {
 	}
 
 	bytes, _ := ioutil.ReadAll(file)
-	json.Unmarshal(bytes, &result)
+	err = json.Unmarshal(bytes, &result)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return
 }
 
@@ -103,5 +107,6 @@ type config struct {
 	Input      string `json:"input"`
 	Output     string `json:"output"`
 	Gif        string `json:"gif"`
+	Avi        string `json:"avi"`
 	Iterations int    `json:"iterations"`
 }

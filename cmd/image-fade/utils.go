@@ -1,6 +1,7 @@
 package fade
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/color/palette"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/harrydb/go/img/grayscale"
+	"github.com/icza/mjpeg"
 )
 
 // Config holds generic configuration info for the iterators
@@ -41,11 +43,40 @@ func LoadGrayscale(filename string) *image.Gray {
 	return gray
 }
 
+func MakeAvi(filename string, images []*image.Gray, fps int32) {
+	defer timeTrack(time.Now(), "making avi")
+	fmt.Println("Making AVI")
+
+	bounds := images[0].Bounds()
+	w := int32(bounds.Dx())
+	h := int32(bounds.Dy())
+	aw, err := mjpeg.New(filename, w, h, fps)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer aw.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for i, frame := range images {
+		buf := new(bytes.Buffer)
+		jpeg.Encode(buf, frame, nil)
+		aw.AddFrame(buf.Bytes())
+
+		printStatus(i+1, len(images))
+	}
+
+	fmt.Println("\r")
+}
+
 // MakeGif is a utility method to convert a sequence of images and save it as
 // a gif.
 func MakeGif(filename string, images []*image.Gray) {
 	defer timeTrack(time.Now(), "making gif")
-	fmt.Println("Making Gif")
+	fmt.Println("Making GIF")
 
 	outGif := &gif.GIF{}
 
@@ -60,11 +91,18 @@ func MakeGif(filename string, images []*image.Gray) {
 	}
 
 	fmt.Println("\r")
-
 	// save to out.gif
-	f, _ := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	defer f.Close()
-	gif.EncodeAll(f, outGif)
+
+	err = gif.EncodeAll(f, outGif)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // PrintStatus print the status of a job as a progress bar.
