@@ -73,7 +73,7 @@ func printUsage() {
 	}
 
 	fmt.Println()
-	fmt.Println("Configuration specified in config.json")
+	fmt.Println("Configuration specified in goConfig.json")
 	fmt.Println()
 }
 

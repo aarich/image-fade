@@ -51,15 +51,15 @@ func getNextImage(in, out *image.Gray) (*image.Gray, int) {
 	return current, numChanged
 }
 
-func getNextPixel(x, y int, in, out *image.Gray) (next int, didChange bool) {
+func getNextPixel(x, y int, in, out *image.Gray) (int, bool) {
 	current := int(in.GrayAt(x, y).Y)
 	desired := int(out.GrayAt(x, y).Y)
 
-	didChange = false
-
 	if current == desired {
-		return current, didChange
+		return current, false
 	}
+
+	var next int
 
 	diff := desired - current
 	if diff > 0 {
@@ -68,12 +68,13 @@ func getNextPixel(x, y int, in, out *image.Gray) (next int, didChange bool) {
 		next = current + 1
 	}
 
+	diff -= 1
+
 	if x > 0 {
 		option := int(in.GrayAt(x-1, y).Y)
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
-			didChange = true
 		}
 	}
 
@@ -82,7 +83,6 @@ func getNextPixel(x, y int, in, out *image.Gray) (next int, didChange bool) {
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
-			didChange = true
 		}
 	}
 
@@ -91,19 +91,17 @@ func getNextPixel(x, y int, in, out *image.Gray) (next int, didChange bool) {
 		if isBetterOption(option, desired, diff) {
 			next = option
 			diff = desired - next
-			didChange = true
 		}
 	}
 
 	if y < (in.Bounds().Dy() - 1) {
-		option := int(in.GrayAt(x, y-1).Y)
+		option := int(in.GrayAt(x, y+1).Y)
 		if isBetterOption(option, desired, diff) {
 			next = option
-			didChange = true
 		}
 	}
 
-	return
+	return next, true
 }
 
 func isBetterOption(p, desired, diff int) bool {
