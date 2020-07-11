@@ -82,7 +82,6 @@ describe('search', () => {
         // not equivalent to any of node1x
         const node2c = new Node(1, 2, 6, node2b);
 
-
         it('checks open list for skipping a new node', () => {
             const search = new AStarSearch(zeros50x50, hundreds50x50, 1);
             search.open.add(node1c);

@@ -8,7 +8,6 @@ export default class Controls extends HTMLElement {
 
         const wrapper = document.createElement('div');
 
-
         const titleSpan = document.createElement('span');
         titleSpan.setAttribute('title', 'Or, at least, the illusion of control');
         titleSpan.textContent = 'Controls: ';
