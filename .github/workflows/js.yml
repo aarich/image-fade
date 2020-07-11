@@ -3,18 +3,11 @@ name: eslint
 on: [push]
 
 jobs:
-  build:
+  eslint:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
-        - uses: actions/setup-node@v2.1.0
-        - name: Install Modules
-          run: yarn
-        - name: Run eslint
-          run: eslint .
-
-      # - uses: hallee/eslint-action@1.0.3
-      #   if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
-      #   with:
-      #     repo-token: ${{secrets.GITHUB_TOKEN}}
-      #     source-root: optional-sub-dir
+      - uses: hallee/eslint-action@1.0.3
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+          source-root: optional-sub-dir
