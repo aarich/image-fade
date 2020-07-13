@@ -4,7 +4,6 @@ package-lock.json
 .vscode
 out
 coverage
-vendor
 bin
 fade.gif
 fade.avi
